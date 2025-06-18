@@ -10,7 +10,7 @@ public class NoticeResDto {
     private String type;         // 글 구분
     private String title;        // 제목
     private String writer;       // 작성자
-    private String contents;    // 내용
+    private String contents;     // 내용
     private String file;         // 첨부 파일
     private String image;        // 첨부 이미지
     private boolean isPin;       // 최상단 공지 여부

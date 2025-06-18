@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Getter @Setter // @NoArgsConstructor => 가짜 데이터 위해 비활성화 (실제 데이터는 생성자 지우기)
-public class RegisterResDto { // id
+public class RegisterResDto {
     private String email;   // 사용자 ID
     private String name;    // 사용자 이름
 }
