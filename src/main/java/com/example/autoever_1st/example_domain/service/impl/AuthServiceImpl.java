@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenDto reissue(TokenReqDto tokenReqDto) {
         if (!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())) {
-            throw new ValidationException("Refresh Token 이 유효하지 않습니다.", CustomStatus.INVALID_INPUT);
+            throw new ValidationException("Refresh Token이 유효하지 않습니다.", CustomStatus.INVALID_INPUT);
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenReqDto.getAccessToken());
 
