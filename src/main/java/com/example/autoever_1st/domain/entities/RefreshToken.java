@@ -1,4 +1,4 @@
-package com.example.autoever_1st.example_domain.entities;
+package com.example.autoever_1st.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
