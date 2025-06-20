@@ -1,6 +1,6 @@
 package com.example.autoever_1st.jwt;
 
-import com.example.autoever_1st.example_domain.dto.common.TokenDto;
+import com.example.autoever_1st.notice.dto.common.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
