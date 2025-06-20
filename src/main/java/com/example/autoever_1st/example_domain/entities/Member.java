@@ -62,5 +62,5 @@ public class Member extends TimeStamp {
     public void deactivate() {
         this.isActive = false;
     }
-
+    //테스트
 }
