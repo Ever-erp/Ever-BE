@@ -1,6 +1,6 @@
 package com.example.autoever_1st.example_domain.dto.res;
 
-import com.example.autoever_1st.example_domain.entities.Member;
+import com.example.autoever_1st.domain.entities.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

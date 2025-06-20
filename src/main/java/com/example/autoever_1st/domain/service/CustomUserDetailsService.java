@@ -1,9 +1,8 @@
-package com.example.autoever_1st.example_domain.service;
+package com.example.autoever_1st.domain.service;
 
-import com.example.autoever_1st.example_domain.entities.Member;
-import com.example.autoever_1st.example_domain.repository.MemberRepository;
+import com.example.autoever_1st.domain.entities.Member;
+import com.example.autoever_1st.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
