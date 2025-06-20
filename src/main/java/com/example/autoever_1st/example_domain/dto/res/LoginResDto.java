@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter // @NoArgsConstructor => 가짜 데이터 위해 비활성화 (실제 데이터는 생성자 지우기)
+@Getter @Setter
+@NoArgsConstructor
 public class LoginResDto {
     private String email;               // 사용자 ID
     // 토큰 필드

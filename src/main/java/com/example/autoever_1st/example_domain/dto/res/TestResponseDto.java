@@ -2,9 +2,10 @@ package com.example.autoever_1st.example_domain.dto.res;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter @Setter
 @NoArgsConstructor
-@Getter
 public class TestResponseDto {
     private Long id;
     private String title;
