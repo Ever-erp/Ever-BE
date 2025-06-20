@@ -1,4 +1,4 @@
-package com.example.autoever_1st.example_domain.service;
+package com.example.autoever_1st.domain.service;
 
 import com.example.autoever_1st.example_domain.dto.common.TokenDto;
 import com.example.autoever_1st.example_domain.dto.req.LoginReqDto;

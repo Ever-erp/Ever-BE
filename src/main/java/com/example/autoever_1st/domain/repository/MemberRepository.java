@@ -1,6 +1,6 @@
-package com.example.autoever_1st.example_domain.repository;
+package com.example.autoever_1st.domain.repository;
 
-import com.example.autoever_1st.example_domain.entities.Member;
+import com.example.autoever_1st.domain.entities.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

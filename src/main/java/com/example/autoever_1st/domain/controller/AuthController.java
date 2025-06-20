@@ -1,4 +1,4 @@
-package com.example.autoever_1st.example_domain.controller;
+package com.example.autoever_1st.domain.controller;
 
 import com.example.autoever_1st.common.dto.response.ApiResponse;
 import com.example.autoever_1st.common.exception.CustomStatus;
@@ -8,7 +8,7 @@ import com.example.autoever_1st.example_domain.dto.req.LoginReqDto;
 import com.example.autoever_1st.example_domain.dto.req.MemberReqDto;
 import com.example.autoever_1st.example_domain.dto.req.TokenReqDto;
 import com.example.autoever_1st.example_domain.dto.res.MemberResponseDto;
-import com.example.autoever_1st.example_domain.service.AuthService;
+import com.example.autoever_1st.domain.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
