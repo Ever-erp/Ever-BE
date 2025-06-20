@@ -1,10 +1,7 @@
 package com.example.autoever_1st.jwt;
 
 import com.example.autoever_1st.example_domain.dto.common.TokenDto;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +39,7 @@ public class JwtTokenProvider {
         // 현재 시간과 토큰 만료 시간 계산
         long now = (new Date()).getTime();
         Date accessTokenExpiresIn = new Date(now + 30 * 60 * 1000); // 30분
+        Date refreshTokenExpiresIn = new Date(now + 1000 * 60 * 60 * 24 * 7L);
 
         // Access Token 생성
         String accessToken = Jwts.builder()
@@ -51,11 +49,19 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS512) // 서명 방식 설정
                 .compact();
 
+        // 리프레시 토큰 생성
+        String refreshToken = io.jsonwebtoken.Jwts.builder()
+                .setExpiration(refreshTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+
         // 결과를 DTO로 반환
         return TokenDto.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .tokenExpiresIn(accessTokenExpiresIn.getTime())
+                .refreshToken(refreshToken)
+                .refreshExpireIn(refreshTokenExpiresIn.getTime())
                 .build();
     }
 
@@ -77,10 +83,16 @@ public class JwtTokenProvider {
     // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            io.jsonwebtoken.Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            log.info("JWT 검증 실패: {}", e.getMessage());
+        } catch (SecurityException | io.jsonwebtoken.MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            log.info("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            log.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
     }

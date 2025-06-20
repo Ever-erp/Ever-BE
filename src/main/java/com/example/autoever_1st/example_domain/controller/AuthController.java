@@ -6,9 +6,11 @@ import com.example.autoever_1st.common.exception.exception_class.business.Valida
 import com.example.autoever_1st.example_domain.dto.common.TokenDto;
 import com.example.autoever_1st.example_domain.dto.req.LoginReqDto;
 import com.example.autoever_1st.example_domain.dto.req.MemberReqDto;
+import com.example.autoever_1st.example_domain.dto.req.TokenReqDto;
 import com.example.autoever_1st.example_domain.dto.res.MemberResponseDto;
 import com.example.autoever_1st.example_domain.service.AuthService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +25,9 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ApiResponse<MemberResponseDto> signup(@RequestBody MemberReqDto memberReqDto) {
+        if (memberReqDto.getEmail() == null || memberReqDto.getEmail().trim().isEmpty()) {
+            throw new ValidationException("이메일은 필수 입력값입니다.", CustomStatus.INVALID_INPUT);
+        }
         MemberResponseDto memberResponseDto = authService.signup(memberReqDto);
         return ApiResponse.success(memberResponseDto, HttpStatus.CREATED.value());
     }
@@ -33,4 +38,21 @@ public class AuthController {
         return ApiResponse.success(tokenDto, HttpStatus.OK.value());
     }
 
+    @PostMapping("/reissue")
+    public ApiResponse<TokenDto> reissue(@RequestBody TokenReqDto tokenReqDto) {
+        TokenDto tokenDto = authService.reissue(tokenReqDto);
+        return ApiResponse.success(tokenDto, HttpStatus.OK.value());
+    }
+
+    @PatchMapping("/deactivate")
+    public ApiResponse<Void> deactivateMember(Authentication authentication) {
+        authService.deactivate(authentication);
+        return ApiResponse.success(null, HttpStatus.OK.value());
+    }
+
+    @DeleteMapping("/logout")
+    public ApiResponse<Void> logout(Authentication authentication) {
+        authService.logout(authentication);
+        return ApiResponse.success(null, HttpStatus.OK.value());
+    }
 }

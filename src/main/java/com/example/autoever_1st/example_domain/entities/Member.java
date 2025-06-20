@@ -59,4 +59,8 @@ public class Member extends TimeStamp {
         this.authority = Authority.ROLE_USER;
     }
 
+    public void deactivate() {
+        this.isActive = false;
+    }
+
 }
