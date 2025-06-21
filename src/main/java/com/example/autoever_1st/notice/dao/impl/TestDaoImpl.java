@@ -1,9 +1,9 @@
-package com.example.autoever_1st.example_domain.dao.impl;
+package com.example.autoever_1st.notice.dao.impl;
 
 import com.example.autoever_1st.common.exception.ExceptionHandling;
-import com.example.autoever_1st.example_domain.dao.TestDao;
-import com.example.autoever_1st.example_domain.entities.TestEntity;
-import com.example.autoever_1st.example_domain.repository.TestRepository;
+import com.example.autoever_1st.notice.dao.TestDao;
+import com.example.autoever_1st.notice.entities.TestEntity;
+import com.example.autoever_1st.notice.repository.TestRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

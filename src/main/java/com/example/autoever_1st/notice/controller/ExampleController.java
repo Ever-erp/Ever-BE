@@ -1,13 +1,13 @@
-package com.example.autoever_1st.example_domain.controller;
+package com.example.autoever_1st.notice.controller;
 
 import com.example.autoever_1st.common.dto.response.ApiResponse;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
-import com.example.autoever_1st.example_domain.dto.req.TestRequestDto;
-import com.example.autoever_1st.example_domain.dto.res.TestResponseDto;
-import com.example.autoever_1st.example_domain.entities.TestEntity;
-import com.example.autoever_1st.example_domain.service.ExampleService;
+import com.example.autoever_1st.notice.dto.req.TestRequestDto;
+import com.example.autoever_1st.notice.dto.res.TestResponseDto;
+import com.example.autoever_1st.notice.entities.TestEntity;
+import com.example.autoever_1st.notice.service.ExampleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

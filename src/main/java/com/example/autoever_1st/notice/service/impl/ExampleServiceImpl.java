@@ -1,10 +1,10 @@
-package com.example.autoever_1st.example_domain.service.impl;
+package com.example.autoever_1st.notice.service.impl;
 
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
-import com.example.autoever_1st.example_domain.dao.TestDao;
-import com.example.autoever_1st.example_domain.entities.TestEntity;
-import com.example.autoever_1st.example_domain.service.ExampleService;
+import com.example.autoever_1st.notice.dao.TestDao;
+import com.example.autoever_1st.notice.entities.TestEntity;
+import com.example.autoever_1st.notice.service.ExampleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

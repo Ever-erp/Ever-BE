@@ -1,4 +1,4 @@
-package com.example.autoever_1st.example_domain.dto.common;
+package com.example.autoever_1st.notice.dto.common;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

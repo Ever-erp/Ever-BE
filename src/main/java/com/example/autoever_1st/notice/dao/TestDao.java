@@ -1,6 +1,6 @@
-package com.example.autoever_1st.example_domain.dao;
+package com.example.autoever_1st.notice.dao;
 
-import com.example.autoever_1st.example_domain.entities.TestEntity;
+import com.example.autoever_1st.notice.entities.TestEntity;
 
 import java.util.Optional;
 

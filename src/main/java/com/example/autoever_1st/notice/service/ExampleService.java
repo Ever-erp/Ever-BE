@@ -1,6 +1,6 @@
-package com.example.autoever_1st.example_domain.service;
+package com.example.autoever_1st.notice.service;
 
-import com.example.autoever_1st.example_domain.entities.TestEntity;
+import com.example.autoever_1st.notice.entities.TestEntity;
 
 public interface ExampleService {
 

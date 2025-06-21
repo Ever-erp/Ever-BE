@@ -1,4 +1,4 @@
-package com.example.autoever_1st.example_domain.entities;
+package com.example.autoever_1st.notice.entities;
 
 import com.example.autoever_1st.common.entities.TimeStamp;
 import jakarta.persistence.*;
