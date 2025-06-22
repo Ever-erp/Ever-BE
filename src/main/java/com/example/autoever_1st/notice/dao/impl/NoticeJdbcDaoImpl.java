@@ -19,7 +19,18 @@ public class NoticeJdbcDaoImpl implements NoticeJdbcDao {
 
     @Override
     public PageImpl<NoticeDto> searchByKeyword(SearchType type, String text, Pageable pageable) {
-        String baseQuery = "SELECT ... FROM notice n ";
+        String baseQuery = """
+    SELECT\s
+        n.notice_id AS noticeId,
+        n.title,
+        n.writer,
+        n.contents,
+        n.is_pinned AS isPinned,
+        n.target_range AS targetRange,
+        n.target_date AS targetDate,
+        n.type
+    FROM notice n
+""";
         String whereClause = "";
         String paramValue = "%" + text + "%";
         // 글 유형 카테고리(enum) : search_title(제목), search_contents(내용), search_writer(작성자)
@@ -32,7 +43,9 @@ public class NoticeJdbcDaoImpl implements NoticeJdbcDao {
         String orderBy = " ORDER BY n.is_pinned DESC, n.notice_id DESC ";
         String limitOffset = " LIMIT ? OFFSET ? ";
         String finalQuery = baseQuery + whereClause + orderBy + limitOffset;
-        String countQuery = "SELECT COUNT(*) FROM notice n " + whereClause;
+        String countQuery = """
+    SELECT COUNT(*) FROM notice n\s
+""" + whereClause;
 
         int total = jdbcTemplate.queryForObject(countQuery, Integer.class, paramValue);
         List<NoticeDto> content = jdbcTemplate.query(

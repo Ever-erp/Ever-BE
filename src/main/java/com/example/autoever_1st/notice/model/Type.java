@@ -1,7 +1,7 @@
 package com.example.autoever_1st.notice.model;
 
 public enum Type {
-    ALL_TYPE,
+    ALL_TYPE,   // 전체
     NOTICE,     // 공지
     SURVEY      // 설문
 }

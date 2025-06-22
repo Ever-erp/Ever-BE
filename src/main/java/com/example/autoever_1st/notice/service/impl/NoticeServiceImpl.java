@@ -141,11 +141,22 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     // 공지 조회 DTO 변환
-    private NoticeDto toDto(Notice notice) {
+    public NoticeDto toDto(Notice notice) {
+        String writerName = "(없음)";
+        if (notice.getMember() == null) {
+            // 멤버 정보가 아예 없는 경우 (탈퇴 또는 삭제)
+            writerName = "(삭제됨)";
+        } else if (!notice.getMember().isActive()) {
+            // 멤버는 있지만 비활성화 상태인 경우
+            writerName = "(비활성화)";
+        } else {
+            // 정상 활성화 회원인 경우
+            writerName = notice.getWriter();  // 또는 notice.getMember().getName();
+        }
         return NoticeDto.builder()
                 .noticeId(notice.getNoticeId())
                 .title(notice.getTitle())
-                .writer(notice.getWriter())
+                .writer(writerName)
                 .contents(notice.getContents())
                 .isPinned(notice.isPinned())
                 .targetRange(notice.getTargetRange())

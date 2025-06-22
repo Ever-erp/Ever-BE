@@ -13,7 +13,7 @@ public interface NoticeService {
     NoticeDto createNotice(NoticeWriteDto dto, Long memberId);
     // 공지 글 번호(noticeId) 검색
     NoticeDto getNotice(Long id);
-    // 공지 전체 조회
+    // 공지 전체 조회(페이징)
     Page<NoticeDto> getAllNotices(Pageable pageable);
     // 공지 키워드 조회 (제목/내용/작성자)
     Page<NoticeDto> searchNotices(SearchType searchType, String text, Pageable pageable);

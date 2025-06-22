@@ -23,9 +23,6 @@ public class Notice {       // extends TimeStamp (ID 중복 문제)
     private Long noticeId;                  // 글 번호
 
     @Enumerated(EnumType.STRING)
-    private SearchType searchType;          // 검색 유형 카테고리(enum) : search_title(제목), search_contents(내용), search_writer(작성자)
-
-    @Enumerated(EnumType.STRING)
     private TargetRange targetRange;        // 공개 범위 : 전체/반(웹앱/스마트팩토리/SW임베디드/IT보안/클라우드)
 
     @Enumerated(EnumType.STRING)
@@ -38,12 +35,12 @@ public class Notice {       // extends TimeStamp (ID 중복 문제)
 
 
     @Column(name = "is_pinned")
-    private boolean isPinned;
+    private boolean isPinned;               // 고정 우선 여부
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @JsonBackReference  // 직렬화 제외 (무한루프 참조 방지)
-    private Member member;
+    private Member member;                  // 멤버(외래키)
 
     @PrePersist
     @PreUpdate

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor @Builder
-public class NoticeWriteDto {            // 게시물 작성 DTO
+public class NoticeWriteDto {          // 게시물 "작성" DTO (요청)
     private String title;              // 제목
     private String contents;           // 내용
     private Boolean isPinned;          // 최상단 고정 여부

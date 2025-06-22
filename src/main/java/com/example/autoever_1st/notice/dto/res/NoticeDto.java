@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor @Builder
-public class NoticeDto {             // 게시물 조회 DTO
+public class NoticeDto {                // 게시물 "조회" DTO (요청/응답)
     private Long noticeId;              // 글 번호
     private String title;               // 글 제목
     private String writer;              // 작성자
