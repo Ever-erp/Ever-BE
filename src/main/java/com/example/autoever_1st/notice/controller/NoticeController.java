@@ -2,6 +2,7 @@ package com.example.autoever_1st.notice.controller;
 
 import com.example.autoever_1st.common.dto.response.ApiResponse;
 import com.example.autoever_1st.notice.dto.res.NoticeResDto;
+import com.example.autoever_1st.notice.dto.res.PageResDto;
 import com.example.autoever_1st.notice.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

@@ -2,9 +2,15 @@ package com.example.autoever_1st.notice.service;
 
 import com.example.autoever_1st.notice.dao.NoticeDao;
 import com.example.autoever_1st.notice.dto.res.NoticeResDto;
+import com.example.autoever_1st.notice.dto.res.PageResDto;
+import com.example.autoever_1st.notice.entities.Member;
 import com.example.autoever_1st.notice.entities.Notice;
 import com.example.autoever_1st.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +35,7 @@ public class NoticeService {
         dto.setPinned(notice.isPinned());
         return dto;
     }
+
     public PageResDto<NoticeResDto> getNotices(int page, int size, String type, String text) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "noticeId"));
 
@@ -61,8 +68,17 @@ public class NoticeService {
                 })
                 .toList();
 
-        return new PageResDto<>(dtoList, page, size, noticePage.getTotalElements());
+        return new PageResDto<>(
+                noticePage.getContent(),
+                noticePage.getNumber(),
+                noticePage.getSize(),
+                noticePage.getTotalElements(),
+                noticePage.getTotalPages(),
+                noticePage.isLast()
+        );
     }
-
+        public List<NoticeResDto> findPinnedNotices() {
+        return noticeDao.findPinnedNotices();
+    }
     // 기타 CRUD는 생략 가능
 }
