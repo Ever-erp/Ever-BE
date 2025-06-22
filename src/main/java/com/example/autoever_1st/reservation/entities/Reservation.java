@@ -1,20 +1,19 @@
-package com.example.autoever_1st.auth.entities;
+package com.example.autoever_1st.reservation.entities;
 
+import com.example.autoever_1st.auth.entities.Member;
 import com.example.autoever_1st.common.entities.TimeStamp;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "reservation")
 @Getter
 @NoArgsConstructor
 public class Reservation extends TimeStamp {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reservation_id")
-    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -30,6 +29,15 @@ public class Reservation extends TimeStamp {
 
     private int headCount;
 
+    private LocalDate reservationDate;
 
-
+    @Builder
+    public Reservation(Member member, int roomNum, int startTime, String reservationDesc, int headCount, LocalDate reservationDate) {
+        this.member = member;
+        this.roomNum = roomNum;
+        this.startTime = startTime;
+        this.reservationDesc = reservationDesc;
+        this.headCount = headCount;
+        this.reservationDate = reservationDate;
+    }
 }
