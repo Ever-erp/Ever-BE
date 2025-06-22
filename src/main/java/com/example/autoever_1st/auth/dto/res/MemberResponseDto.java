@@ -1,4 +1,4 @@
-package com.example.autoever_1st.notice.dto.res;
+package com.example.autoever_1st.auth.dto.res;
 
 import com.example.autoever_1st.auth.entities.Member;
 import lombok.AllArgsConstructor;

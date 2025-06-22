@@ -1,4 +1,4 @@
-package com.example.autoever_1st.notice.dto.common;
+package com.example.autoever_1st.auth.dto.common;
 
 import lombok.*;
 

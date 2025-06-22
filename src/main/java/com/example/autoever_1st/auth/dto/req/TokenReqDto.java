@@ -1,4 +1,4 @@
-package com.example.autoever_1st.notice.dto.req;
+package com.example.autoever_1st.auth.dto.req;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
