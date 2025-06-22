@@ -1,5 +1,6 @@
 package com.example.autoever_1st.notice.dto.res;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class NoticeResDto {
     private Long noticeId;
     private String type;
@@ -15,4 +17,5 @@ public class NoticeResDto {
     private String contents;
     private String file;
     private boolean isPinned;
+
 }

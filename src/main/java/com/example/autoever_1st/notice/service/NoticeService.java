@@ -29,9 +29,39 @@ public class NoticeService {
         dto.setPinned(notice.isPinned());
         return dto;
     }
+    public PageResDto<NoticeResDto> getNotices(int page, int size, String type, String text) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "noticeId"));
 
-    public List<NoticeResDto> findPinnedNotices() {
-        return noticeDao.findPinnedNotices();
+        Page<Notice> noticePage;
+
+        if (type != null && text != null && !text.isBlank()) {
+            switch (type.toLowerCase()) {
+                case "title" -> noticePage = noticeRepository.findByTitleContaining(text, pageable);
+                case "content" -> noticePage = noticeRepository.findByContentsContaining(text, pageable);
+                case "writer" -> noticePage = noticeRepository.findByWriterContaining(text, pageable);
+                default -> noticePage = noticeRepository.findAll(pageable);
+            }
+        } else {
+            noticePage = noticeRepository.findAll(pageable);
+        }
+
+        List<NoticeResDto> dtoList = noticePage.getContent().stream()
+                .map(notice -> {
+                    Member member = notice.getMember();
+                    String writer = (member == null || !member.isActive()) ? "확인불가" : member.getName();
+                    return new NoticeResDto(
+                            notice.getNoticeId(),
+                            notice.getType(),
+                            notice.getTitle(),
+                            writer,
+                            notice.getContents(),
+                            notice.getFile(),
+                            notice.isPinned()
+                    );
+                })
+                .toList();
+
+        return new PageResDto<>(dtoList, page, size, noticePage.getTotalElements());
     }
 
     // 기타 CRUD는 생략 가능

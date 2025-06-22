@@ -25,4 +25,14 @@ public class NoticeController {
     public ApiResponse<List<NoticeResDto>> getPinnedNotices() {
         return ApiResponse.success(noticeService.findPinnedNotices(), 200);
     }
+
+    @GetMapping
+    public ApiResponse<PageResDto<NoticeResDto>> getNotices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String text) {
+        return ApiResponse.success(noticeService.getNotices(page, size, type, text), 200);
+    }
+
 }
