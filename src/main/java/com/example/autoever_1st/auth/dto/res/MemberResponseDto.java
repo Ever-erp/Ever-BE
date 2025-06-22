@@ -21,6 +21,7 @@ public class MemberResponseDto {
     private String phone;
     private String address;
     private String profileImage;
+    private Long classId;
 
     public static MemberResponseDto of(Member member) {
         return MemberResponseDto.builder()
@@ -31,6 +32,7 @@ public class MemberResponseDto {
                 .phone(member.getPhone())
                 .address(member.getAddress())
                 .profileImage(member.getProfileImage())
+                .classId(member.getClassEntity().getId())
                 .build();
     }
 }
