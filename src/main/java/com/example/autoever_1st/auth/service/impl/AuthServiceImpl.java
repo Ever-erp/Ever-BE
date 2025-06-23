@@ -1,7 +1,7 @@
 package com.example.autoever_1st.auth.service.impl;
 
 import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
-import com.example.autoever_1st.common.entities.ClassEntity;
+import com.example.autoever_1st.organization.entities.ClassEntity;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
@@ -15,7 +15,7 @@ import com.example.autoever_1st.auth.entities.RefreshToken;
 import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.auth.repository.RefreshTokenRepository;
 import com.example.autoever_1st.auth.service.AuthService;
-import com.example.autoever_1st.common.repository.ClassEntityRepository;
+import com.example.autoever_1st.organization.repository.ClassEntityRepository;
 import com.example.autoever_1st.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,9 +1,10 @@
 package com.example.autoever_1st.auth.entities;
 
-import com.example.autoever_1st.common.entities.ClassEntity;
+import com.example.autoever_1st.organization.entities.ClassEntity;
 import com.example.autoever_1st.common.entities.TimeStamp;
 import com.example.autoever_1st.constant.Authority;
 import com.example.autoever_1st.notice.entities.Notice;
+import com.example.autoever_1st.organization.entities.Position;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -57,9 +58,13 @@ public class Member extends TimeStamp {
     @JsonManagedReference  // 직렬화 허용 (무한루프 참조 방지)
     private List<Notice> noticeList=new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position_id")
+    private Position position;
+
     @Builder // 빌더 패턴 적용
     public Member(String email, String pwd, String name, LocalDate birth, String gender,
-                  String phone, String address, String profileImage) {
+                  String phone, String address, String profileImage, ClassEntity classEntity, Position position) {
         this.email = email;
         this.pwd = pwd;
         this.name = name;
@@ -70,6 +75,8 @@ public class Member extends TimeStamp {
         this.profileImage = profileImage;
         this.isActive = true;
         this.authority = Authority.ROLE_USER;
+        this.classEntity = classEntity;
+        this.position = position;
     }
     public void deactivate() {
         this.isActive = false;

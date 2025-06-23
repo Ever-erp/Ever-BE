@@ -2,7 +2,7 @@ package com.example.autoever_1st.auth.controller;
 
 import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
-import com.example.autoever_1st.common.entities.ClassEntity;
+import com.example.autoever_1st.organization.entities.ClassEntity;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
@@ -12,7 +12,7 @@ import com.example.autoever_1st.auth.dto.req.MemberReqDto;
 import com.example.autoever_1st.auth.dto.req.TokenReqDto;
 import com.example.autoever_1st.auth.dto.res.MemberResponseDto;
 import com.example.autoever_1st.auth.service.AuthService;
-import com.example.autoever_1st.common.repository.ClassEntityRepository;
+import com.example.autoever_1st.organization.repository.ClassEntityRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;

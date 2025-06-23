@@ -1,4 +1,4 @@
-package com.example.autoever_1st.common.entities;
+package com.example.autoever_1st.organization.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
