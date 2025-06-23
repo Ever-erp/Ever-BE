@@ -1,5 +1,7 @@
 package com.example.autoever_1st.auth.service.impl;
 
+import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
+import com.example.autoever_1st.common.entities.ClassEntity;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
@@ -13,6 +15,7 @@ import com.example.autoever_1st.auth.entities.RefreshToken;
 import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.auth.repository.RefreshTokenRepository;
 import com.example.autoever_1st.auth.service.AuthService;
+import com.example.autoever_1st.common.repository.ClassEntityRepository;
 import com.example.autoever_1st.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,14 +33,16 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManagerBuilder managerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ClassEntityRepository classEntityRepository;
 
     public AuthServiceImpl(MemberRepository memberRepository, PasswordEncoder passwordEncoder, AuthenticationManagerBuilder managerBuilder,
-                           JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository) {
+                           JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository, ClassEntityRepository classEntityRepository) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.managerBuilder = managerBuilder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.classEntityRepository = classEntityRepository;
     }
 
     @Override
@@ -45,12 +50,18 @@ public class AuthServiceImpl implements AuthService {
         if(!memberReqDto.getPwd().equals(memberReqDto.getPwdCheck())) {
             throw new ValidationException("비밀번호와 비밀번호 확인이 일치하지 않습니다.", CustomStatus.INVALID_INPUT.getStatus());
         }
+        if (memberReqDto.getPwd().length() < 8) {
+            throw new ValidationException("비밀번호는 최소 8자 이상이어야 합니다.", CustomStatus.INVALID_INPUT.getStatus());
+        }
         if (memberRepository.existsByEmail(memberReqDto.getEmail())) {
             throw new ValidationException("이미 사용 중인 이메일입니다.", CustomStatus.INVALID_INPUT);
         }
         if (!memberReqDto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new ValidationException("유효하지 않은 이메일 형식입니다.", CustomStatus.INVALID_INPUT);
         }
+        // 반 정보 조회
+        ClassEntity classEntity = classEntityRepository.findById(memberReqDto.getClassId())
+                .orElseThrow(() -> new DataNotFoundException("반 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
 
         Member newMember = Member.builder()
                 .email(memberReqDto.getEmail())
@@ -61,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
                 .phone(memberReqDto.getPhone())
                 .address(memberReqDto.getAddress())
                 .profileImage(memberReqDto.getProfileImage())
+                .classEntity(classEntity)
                 .build();
         Member saved = memberRepository.save(newMember);
 
@@ -68,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenDto login(LoginReqDto loginReqDto) {
+    public LoginResponseDto login(LoginReqDto loginReqDto) {
         Member member = memberRepository.findByEmail(loginReqDto.getEmail())
                 .orElseThrow(() -> new DataNotFoundException("해당 이메일로 가입된 사용자가 없습니다.", CustomStatus.NOT_HAVE_DATA));
         // 비활성화 여부 확인
@@ -93,7 +105,12 @@ public class AuthServiceImpl implements AuthService {
                     .build();
             refreshTokenRepository.save(refreshToken);
 
-            return tokenDto;
+            MemberResponseDto memberResponseDto = MemberResponseDto.of(member);
+
+            return LoginResponseDto.builder()
+                    .tokenDto(tokenDto)
+                    .memberResponseDto(memberResponseDto)
+                    .build();
         } catch (BadCredentialsException e) {
             throw new ValidationException("이메일 또는 비밀번호가 일치하지 않습니다.", CustomStatus.INVALID_INPUT);
         }

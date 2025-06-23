@@ -1,5 +1,6 @@
 package com.example.autoever_1st.auth.entities;
 
+import com.example.autoever_1st.common.entities.ClassEntity;
 import com.example.autoever_1st.common.entities.TimeStamp;
 import com.example.autoever_1st.constant.Authority;
 import com.example.autoever_1st.notice.entities.Notice;
@@ -47,6 +48,10 @@ public class Member extends TimeStamp {
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id")
+    private ClassEntity classEntity;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
     @JsonManagedReference  // 직렬화 허용 (무한루프 참조 방지)

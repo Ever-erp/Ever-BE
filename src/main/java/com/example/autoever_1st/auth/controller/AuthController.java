@@ -1,7 +1,10 @@
 package com.example.autoever_1st.auth.controller;
 
+import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
+import com.example.autoever_1st.common.entities.ClassEntity;
 import com.example.autoever_1st.common.exception.CustomStatus;
+import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
 import com.example.autoever_1st.auth.dto.common.TokenDto;
 import com.example.autoever_1st.auth.dto.req.LoginReqDto;
@@ -9,6 +12,7 @@ import com.example.autoever_1st.auth.dto.req.MemberReqDto;
 import com.example.autoever_1st.auth.dto.req.TokenReqDto;
 import com.example.autoever_1st.auth.dto.res.MemberResponseDto;
 import com.example.autoever_1st.auth.service.AuthService;
+import com.example.autoever_1st.common.repository.ClassEntityRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +22,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final ClassEntityRepository classEntityRepository;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, ClassEntityRepository classEntityRepository) {
         this.authService = authService;
+        this.classEntityRepository = classEntityRepository;
     }
 
     @PostMapping("/signup")
@@ -32,10 +38,17 @@ public class AuthController {
         return ApiResponse.success(memberResponseDto, HttpStatus.CREATED.value());
     }
 
+    @GetMapping("/class/{classId}/cohort")
+    public ApiResponse<Integer> getCohortByClass(@PathVariable Long classId) {
+        ClassEntity classEntity = classEntityRepository.findById(classId)
+                .orElseThrow(() -> new DataNotFoundException("반 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        return ApiResponse.success(classEntity.getCohort(), HttpStatus.OK.value());
+    }
+
     @PostMapping("/login")
-    public ApiResponse<TokenDto> login(@RequestBody LoginReqDto loginReqDto) {
-        TokenDto tokenDto = authService.login(loginReqDto);
-        return ApiResponse.success(tokenDto, HttpStatus.OK.value());
+    public ApiResponse<LoginResponseDto> login(@RequestBody LoginReqDto loginReqDto) {
+        LoginResponseDto loginResponseDto = authService.login(loginReqDto);
+        return ApiResponse.success(loginResponseDto, HttpStatus.OK.value());
     }
 
     @PostMapping("/reissue")
