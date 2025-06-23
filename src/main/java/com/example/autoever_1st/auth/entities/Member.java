@@ -1,5 +1,6 @@
 package com.example.autoever_1st.auth.entities;
 
+import com.example.autoever_1st.common.entities.ClassEntity;
 import com.example.autoever_1st.common.entities.TimeStamp;
 import com.example.autoever_1st.constant.Authority;
 import jakarta.persistence.*;
@@ -44,9 +45,13 @@ public class Member extends TimeStamp {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id")
+    private ClassEntity classEntity;
+
     @Builder // 빌더 패턴 적용
     public Member(String email, String pwd, String name, LocalDate birth, String gender,
-                  String phone, String address, String profileImage) {
+                  String phone, String address, String profileImage, ClassEntity classEntity) {
         this.email = email;
         this.pwd = pwd;
         this.name = name;
@@ -57,6 +62,7 @@ public class Member extends TimeStamp {
         this.profileImage = profileImage;
         this.isActive = true;
         this.authority = Authority.ROLE_USER;
+        this.classEntity = classEntity;
     }
     public void deactivate() {
         this.isActive = false;
