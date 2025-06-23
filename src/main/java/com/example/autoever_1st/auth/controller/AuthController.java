@@ -2,6 +2,9 @@ package com.example.autoever_1st.auth.controller;
 
 import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
+import com.example.autoever_1st.organization.dto.common.ClassScheduleDto;
+import com.example.autoever_1st.organization.dto.common.ClassWithScheduleDto;
+import com.example.autoever_1st.organization.dto.res.ClassSimpleDto;
 import com.example.autoever_1st.organization.entities.ClassEntity;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
@@ -16,6 +19,8 @@ import com.example.autoever_1st.organization.repository.ClassEntityRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,11 +43,16 @@ public class AuthController {
         return ApiResponse.success(memberResponseDto, HttpStatus.CREATED.value());
     }
 
-    @GetMapping("/class/{classId}/cohort")
-    public ApiResponse<Integer> getCohortByClass(@PathVariable Long classId) {
-        ClassEntity classEntity = classEntityRepository.findById(classId)
-                .orElseThrow(() -> new DataNotFoundException("반 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
-        return ApiResponse.success(classEntity.getCohort(), HttpStatus.OK.value());
+    @GetMapping("/class/all")
+    public ApiResponse<List<ClassSimpleDto>> getClassInfoByName() {
+         List<ClassSimpleDto> result = classEntityRepository.findAll()
+                .stream()
+                .map(classEntity -> new ClassSimpleDto(
+                        classEntity.getName(),
+                        classEntity.getCohort()
+                ))
+                .toList();
+        return ApiResponse.success(result, HttpStatus.OK.value());
     }
 
     @PostMapping("/login")
