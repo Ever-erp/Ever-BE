@@ -22,6 +22,7 @@ public class MemberResponseDto {
     private String address;
     private String profileImage;
     private Long classId;
+    private String position;
 
     public static MemberResponseDto of(Member member) {
         return MemberResponseDto.builder()
@@ -33,6 +34,7 @@ public class MemberResponseDto {
                 .address(member.getAddress())
                 .profileImage(member.getProfileImage())
                 .classId(member.getClassEntity().getId())
+                .position(member.getPosition() != null ? member.getPosition().getRole() : null)
                 .build();
     }
 }

@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDto login(LoginReqDto loginReqDto) {
-        Member member = memberRepository.findByEmail(loginReqDto.getEmail())
+        Member member = memberRepository.findByEmailWithPosition(loginReqDto.getEmail())
                 .orElseThrow(() -> new DataNotFoundException("해당 이메일로 가입된 사용자가 없습니다.", CustomStatus.NOT_HAVE_DATA));
         // 비활성화 여부 확인
         if (!member.isActive()) {
