@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface ClassEntityRepository extends JpaRepository<ClassEntity, Long> {
     List<ClassEntity>findAll();
+    Optional<ClassEntity> findByNameAndCohort(String name, int cohort);
 }

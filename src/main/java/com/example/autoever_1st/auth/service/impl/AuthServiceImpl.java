@@ -25,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -60,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ValidationException("유효하지 않은 이메일 형식입니다.", CustomStatus.INVALID_INPUT);
         }
         // 반 정보 조회
-        ClassEntity classEntity = classEntityRepository.findById(memberReqDto.getClassId())
+        ClassEntity classEntity = classEntityRepository.findByNameAndCohort(memberReqDto.getClassName(), memberReqDto.getCohort())
                 .orElseThrow(() -> new DataNotFoundException("반 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
 
         Member newMember = Member.builder()
