@@ -1,5 +1,6 @@
 package com.example.autoever_1st.auth.service.impl;
 
+import com.example.autoever_1st.auth.dto.req.ImageReqDto;
 import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
 import com.example.autoever_1st.organization.entities.ClassEntity;
 import com.example.autoever_1st.common.exception.CustomStatus;
@@ -156,5 +157,14 @@ public class AuthServiceImpl implements AuthService {
         String email = authentication.getName();
         refreshTokenRepository.findByEmail(email)
                 .ifPresent(refreshTokenRepository::delete);
+    }
+
+    @Transactional
+    @Override
+    public void updateProfileImage(ImageReqDto imageReqDto) {
+        Member member = memberRepository.findByEmail(imageReqDto.getEmail())
+                .orElseThrow(() -> new DataNotFoundException("해당 이메일의 회원을 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        member.setProfileImage(imageReqDto.getProfileImage());
     }
 }
