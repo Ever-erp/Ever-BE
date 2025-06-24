@@ -1,5 +1,6 @@
 package com.example.autoever_1st.auth.controller;
 
+import com.example.autoever_1st.auth.dto.req.ImageReqDto;
 import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
 import com.example.autoever_1st.organization.dto.common.ClassScheduleDto;
@@ -41,6 +42,12 @@ public class AuthController {
         }
         MemberResponseDto memberResponseDto = authService.signup(memberReqDto);
         return ApiResponse.success(memberResponseDto, HttpStatus.CREATED.value());
+    }
+
+    @PostMapping("/updateImage")
+    public ApiResponse<Void> updateProfileImage(@RequestBody ImageReqDto imageReqDto) {
+        authService.updateProfileImage(imageReqDto);
+        return ApiResponse.success(null, HttpStatus.OK.value());
     }
 
     @GetMapping("/class/all")
