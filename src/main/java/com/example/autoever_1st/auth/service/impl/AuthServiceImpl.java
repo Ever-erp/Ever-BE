@@ -16,8 +16,10 @@ import com.example.autoever_1st.auth.entities.RefreshToken;
 import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.auth.repository.RefreshTokenRepository;
 import com.example.autoever_1st.auth.service.AuthService;
+import com.example.autoever_1st.organization.entities.Position;
 import com.example.autoever_1st.organization.repository.ClassEntityRepository;
 import com.example.autoever_1st.jwt.JwtTokenProvider;
+import com.example.autoever_1st.organization.repository.PositionRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -37,17 +39,21 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ClassEntityRepository classEntityRepository;
+    private final PositionRepository positionRepository;
 
     public AuthServiceImpl(MemberRepository memberRepository, PasswordEncoder passwordEncoder, AuthenticationManagerBuilder managerBuilder,
-                           JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository, ClassEntityRepository classEntityRepository) {
+                           JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository
+            , ClassEntityRepository classEntityRepository, PositionRepository positionRepository) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.managerBuilder = managerBuilder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
         this.classEntityRepository = classEntityRepository;
+        this.positionRepository = positionRepository;
     }
 
+    @Transactional
     @Override
     public MemberResponseDto signup(MemberReqDto memberReqDto) {
         if(!memberReqDto.getPwd().equals(memberReqDto.getPwdCheck())) {
@@ -65,6 +71,8 @@ public class AuthServiceImpl implements AuthService {
         // 반 정보 조회
         ClassEntity classEntity = classEntityRepository.findByNameAndCohort(memberReqDto.getClassName(), memberReqDto.getCohort())
                 .orElseThrow(() -> new DataNotFoundException("반 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        Optional<Position> defaultPosition = positionRepository.findByRole("학생");
+        Position foundPosition = defaultPosition.get();
 
         Member newMember = Member.builder()
                 .email(memberReqDto.getEmail())
@@ -76,6 +84,7 @@ public class AuthServiceImpl implements AuthService {
                 .address(memberReqDto.getAddress())
                 .profileImage(memberReqDto.getProfileImage())
                 .classEntity(classEntity)
+                .position(foundPosition)
                 .build();
         Member saved = memberRepository.save(newMember);
 
