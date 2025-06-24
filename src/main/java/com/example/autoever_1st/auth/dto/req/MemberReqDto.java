@@ -17,5 +17,6 @@ public class MemberReqDto {
     private String phone;
     private String address;
     private String profileImage;
-    private Long classId;
+    private String className;
+    private int cohort;
 }
