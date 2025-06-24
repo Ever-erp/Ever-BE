@@ -3,12 +3,13 @@ package com.example.autoever_1st.common.exception;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
 import com.example.autoever_1st.common.exception.exception_class.business.BusinessException;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
+import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
 import com.example.autoever_1st.common.exception.exception_class.database.DatabaseException;
-import jakarta.xml.bind.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -36,10 +37,6 @@ public class GlobalExceptionHandler {
         ApiResponse<Object> response = ApiResponse.fail(e.getMessage(), e.getStatus());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
-
-    /*
-    * 추가적인 커스텀 에러들 이곳에 작성
-    * */
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException e){
