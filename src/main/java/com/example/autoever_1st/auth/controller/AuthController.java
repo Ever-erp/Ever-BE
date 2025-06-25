@@ -3,6 +3,7 @@ package com.example.autoever_1st.auth.controller;
 import com.example.autoever_1st.auth.dto.req.ImageReqDto;
 import com.example.autoever_1st.auth.dto.res.LoginResponseDto;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
+import com.example.autoever_1st.jwt.JwtTokenProvider;
 import com.example.autoever_1st.organization.dto.common.ClassScheduleDto;
 import com.example.autoever_1st.organization.dto.common.ClassWithScheduleDto;
 import com.example.autoever_1st.organization.dto.res.ClassSimpleDto;
@@ -30,10 +31,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final ClassEntityRepository classEntityRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthController(AuthService authService, ClassEntityRepository classEntityRepository) {
+    public AuthController(AuthService authService, ClassEntityRepository classEntityRepository, JwtTokenProvider jwtTokenProvider) {
         this.authService = authService;
         this.classEntityRepository = classEntityRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/signup")
@@ -85,5 +88,24 @@ public class AuthController {
     public ApiResponse<Void> logout(Authentication authentication) {
         authService.logout(authentication);
         return ApiResponse.success(null, HttpStatus.OK.value());
+    }
+
+    @GetMapping("/validate")
+    public ApiResponse<Void> validateToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = extractToken(authHeader);
+            if (!jwtTokenProvider.validateToken(token)) {
+                throw new ValidationException("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
+            }
+            return ApiResponse.success(null, HttpStatus.OK.value());
+        } catch (Exception e) {
+            throw new ValidationException("토큰 검증 중 오료 발생", HttpStatus.UNAUTHORIZED);
+        }
+    }
+    private String extractToken(String header) {
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        throw new ValidationException("Authorization 헤더 형식이 잘못되었습니다.", HttpStatus.UNAUTHORIZED);
     }
 }
