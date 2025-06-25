@@ -109,14 +109,19 @@ public class AuthServiceImpl implements AuthService {
             String email = authentication.getName();
 
             // 기존 토큰이 있으면 삭제하고 새로 저장
-            refreshTokenRepository.findByEmail(email)
-                    .ifPresent(existing -> refreshTokenRepository.delete(existing));
+            Optional<RefreshToken> existing = refreshTokenRepository.findByEmail(email);
 
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .email(email)
-                    .token(tokenDto.getRefreshToken())
-                    .build();
-            refreshTokenRepository.save(refreshToken);
+            if (existing.isPresent()) {
+                RefreshToken token = existing.get();
+                token.setToken(tokenDto.getRefreshToken()); // setter 사용
+                refreshTokenRepository.save(token);
+            } else {
+                RefreshToken newToken = RefreshToken.builder()
+                        .email(email)
+                        .token(tokenDto.getRefreshToken())
+                        .build();
+                refreshTokenRepository.save(newToken);
+            }
 
             member.getPosition();
 

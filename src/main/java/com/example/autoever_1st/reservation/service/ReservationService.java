@@ -10,4 +10,6 @@ public interface ReservationService {
     ReservationStatusDto getReservationStatus(Authentication authentication);
     ReservedTimeDto getReservedTimesForRoom(RoomTimeReqDto roomTimeReqDto);
     void makeReservation(ReservationReqDto reservationReqDto, Authentication authentication);
+
+    void cancelReservation(int roomNum, int startTime, Authentication authentication);
 }
