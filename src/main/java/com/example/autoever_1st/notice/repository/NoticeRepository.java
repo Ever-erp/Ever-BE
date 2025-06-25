@@ -1,8 +1,8 @@
 package com.example.autoever_1st.notice.repository;
 
 import com.example.autoever_1st.notice.entities.Notice;
-import com.example.autoever_1st.notice.model.TargetRange;
-import com.example.autoever_1st.notice.model.Type;
+import com.example.autoever_1st.notice.constant.TargetRange;
+import com.example.autoever_1st.notice.constant.Type;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,9 +21,9 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Page<Notice> findByType(Type type, Pageable pageable);
 
     // pinned 상태를 먼저 내림차순, 그 다음 최신순 정렬 예
-    @Query("SELECT n FROM Notice n ORDER BY n.isPinned DESC, n.noticeId DESC")
+    @Query("SELECT n FROM Notice n ORDER BY n.isPinned DESC, n.id DESC")
     List<Notice> findAllOrderByPinnedAndIdDesc();
 
     // 페이징 지원 시 Pageable 사용, 글 번호로 내림차순
-    Page<Notice> findAllByOrderByIsPinnedDescNoticeIdDesc(Pageable pageable);
+    Page<Notice> findAllByOrderByIsPinnedDescIdDesc(Pageable pageable);
 }

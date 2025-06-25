@@ -1,14 +1,18 @@
 package com.example.autoever_1st.notice.controller;
 
 import com.example.autoever_1st.common.dto.response.ApiResponse;
+import com.example.autoever_1st.notice.constant.SearchType;
+import com.example.autoever_1st.notice.constant.TargetRange;
+import com.example.autoever_1st.notice.constant.Type;
 import com.example.autoever_1st.notice.dto.req.NoticeWriteDto;
 import com.example.autoever_1st.notice.dto.res.NoticeDto;
-import com.example.autoever_1st.notice.model.SearchType;
-import com.example.autoever_1st.notice.model.TargetRange;
-import com.example.autoever_1st.notice.model.Type;
 import com.example.autoever_1st.notice.service.impl.NoticeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,14 +24,15 @@ public class NoticeController {
 
     // 공지 작성
     @PostMapping
-    public ApiResponse<NoticeDto> create(@RequestBody NoticeWriteDto dto, @RequestParam Long memberId) {
-        return ApiResponse.success(noticeServiceImpl.createNotice(dto, memberId),201);
+    public ApiResponse<NoticeDto> create(@RequestBody NoticeWriteDto dto, Authentication authentication) {
+        return ApiResponse.success(noticeServiceImpl.createNotice(dto, authentication), 201);
     }
 
     // 공지 글 번호(noticeId) 검색
     @GetMapping("/{id}")
     public ApiResponse<NoticeDto> get(@PathVariable Long id) {
-        return ApiResponse.success(noticeServiceImpl.getNotice(id), 200);}
+        return ApiResponse.success(noticeServiceImpl.getNotice(id), 200);
+    }
 
     // 공지 전체 조회 (페이징) 및 키워드 조회 (제목/내용/작성자)
     @GetMapping
@@ -46,8 +51,9 @@ public class NoticeController {
                 ? noticeServiceImpl.searchNotices(searchType, text, pageable)
                 : noticeServiceImpl.getAllNotices(pageable);
 
-        return ApiResponse.success(result,200);
+        return ApiResponse.success(result, 200);
     }
+
     // 공지 유형 (공개범위/구분)으로 조회(AND, OR)
     @GetMapping("/search")
     public ApiResponse<Page<NoticeDto>> searchByTarget(
@@ -62,22 +68,25 @@ public class NoticeController {
             type = Type.ALL_TYPE;
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("noticeId").descending()));
-        return ApiResponse.success(noticeServiceImpl.searchByTargetRangeAndType(targetRange, type, pageable),200);
+        return ApiResponse.success(noticeServiceImpl.searchByTargetRangeAndType(targetRange, type, pageable), 200);
     }
+
     // 공지 수정(PATCH)
     @PatchMapping("/{id}")
-    public ApiResponse<NoticeDto> patchUpdate(@PathVariable Long id, @RequestBody NoticeWriteDto dto) {
-        return ApiResponse.success(noticeServiceImpl.updateNoticePartial(id, dto),200);
+    public ApiResponse<NoticeDto> patchUpdate(@PathVariable Long id, @RequestBody NoticeWriteDto dto, Authentication authentication) {
+        return ApiResponse.success(noticeServiceImpl.updateNoticePartial(id, dto, authentication), 200);
     }
+
     // 공지 수정(PUT)
     @PutMapping("/{id}")
-    public ApiResponse<NoticeDto> update(@PathVariable Long id, @RequestBody NoticeWriteDto dto) {
-        return ApiResponse.success(noticeServiceImpl.updateNotice(id, dto),200);
+    public ApiResponse<NoticeDto> update(@PathVariable Long id, @RequestBody NoticeWriteDto dto, Authentication authentication) {
+        return ApiResponse.success(noticeServiceImpl.updateNotice(id, dto, authentication), 200);
     }
-    // 공지 삭제
-    @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
-        noticeServiceImpl.deleteNotice(id);
-        return ApiResponse.success(null,200); // 또는 message 담아도 됨
+
+        // 공지 삭제
+        @DeleteMapping("/{id}")
+        public ApiResponse<Void> delete (@PathVariable Long id, Authentication authentication){
+            noticeServiceImpl.deleteNotice(id, authentication);
+            return ApiResponse.success(null, 200); // 또는 message 담아도 됨
+        }
     }
-}

@@ -50,7 +50,7 @@ public class ReservationImpl implements ReservationService {
                 .collect(Collectors.groupingBy(Reservation::getRoomNum, Collectors.counting()));
         // 모든 시간이 예약된 방
         List<Integer> fullyBookedRooms = reservationCountByRoom.entrySet().stream()
-                .filter(e -> e.getValue() >= 12)
+                .filter(e -> e.getValue() >= 13)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 

@@ -1,7 +1,7 @@
 package com.example.autoever_1st.notice.dto.req;
 
-import com.example.autoever_1st.notice.model.TargetRange;
-import com.example.autoever_1st.notice.model.Type;
+import com.example.autoever_1st.notice.constant.TargetRange;
+import com.example.autoever_1st.notice.constant.Type;
 import lombok.*;
 
 import java.time.LocalDate;
