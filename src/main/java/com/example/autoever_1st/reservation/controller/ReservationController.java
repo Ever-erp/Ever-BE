@@ -33,4 +33,10 @@ public class ReservationController {
         reservationService.makeReservation(reservationReqDto, authentication);
         return ApiResponse.success(null, HttpStatus.OK.value());
     }
+
+    @DeleteMapping("/reservation/cancel/{roomNum}/{startTime}")
+    public ApiResponse<Void> cancelReservation(@PathVariable int roomNum, @PathVariable int startTime, Authentication authentication) {
+        reservationService.cancelReservation(roomNum, startTime, authentication);
+        return ApiResponse.success(null, HttpStatus.OK.value());
+    }
 }
