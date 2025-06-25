@@ -18,6 +18,7 @@ import com.example.autoever_1st.organization.repository.ClassScheduleRepository;
 import com.example.autoever_1st.organization.repository.PositionRepository;
 import com.example.autoever_1st.organization.service.OrganizationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     @Override
     public OrgInitResDto getOrganizationInitData() {
         List<ClassWithScheduleDto> classes = classEntityRepository.findAll().stream()
@@ -66,6 +68,11 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new RuntimeException("강사 포지션이 존재하지 않습니다."));
         // 해당 포지션을 가진 멤버들 가져오기
         List<Member> instructors = memberRepository.findByPosition(instructorPosition);
+
+        for (Member member:instructors) {
+            member.getPosition();
+        }
+
         List<MemberResponseDto> instructorDtos = instructors.stream()
                 .map(MemberResponseDto::of)
                 .toList();
@@ -73,6 +80,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         return new OrgInitResDto(classes, instructorDtos);
     }
 
+    @Transactional
     @Override
     public ClassDetailDto getClassDetail(Long classId) {
         // 반 정보
@@ -85,6 +93,11 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .toList();
         // 해당 반의 멤버들
         List<Member> members = memberRepository.findByClassEntity(classEntity);
+
+        for (Member member:members) {
+            member.getPosition();
+        }
+
         List<MemberResponseDto> memberDtos = members.stream()
                 .map(MemberResponseDto::of)
                 .toList();
@@ -98,23 +111,35 @@ public class OrganizationServiceImpl implements OrganizationService {
         );
     }
 
+    @Transactional
     @Override
     public List<MemberResponseDto> searchMembersByName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new ValidationException("검색할 이름을 입력해주세요.", CustomStatus.INVALID_INPUT);
         }
         List<Member> members = memberRepository.findByNameContaining(name);
+
+        for (Member member:members) {
+            member.getPosition();
+        }
+
         return members.stream()
                 .map(MemberResponseDto::of)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public List<MemberResponseDto> searchMembersInClass(Long classId, String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new ValidationException("검색할 이름을 입력해주세요.", CustomStatus.INVALID_INPUT);
         }
         List<Member> members = memberRepository.findByClassEntityIdAndNameContaining(classId, name);
+
+        for (Member member:members) {
+            member.getPosition();
+        }
+
         return members.stream()
                 .map(MemberResponseDto::of)
                 .collect(Collectors.toList());

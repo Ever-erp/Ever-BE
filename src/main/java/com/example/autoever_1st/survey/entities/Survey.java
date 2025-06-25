@@ -2,16 +2,13 @@ package com.example.autoever_1st.survey.entities;
 
 import com.example.autoever_1st.common.entities.TimeStamp;
 import com.example.autoever_1st.organization.entities.ClassEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,13 +21,17 @@ public class Survey extends TimeStamp {
 
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id")
-    private ClassEntity classEntity;
+    private String description;
 
+    private String status;
+
+    @Column(columnDefinition = "TEXT")
     private String question;
 
+    @Column(columnDefinition = "TEXT", name = "question_meta")
     private String questionMeta;
 
     private LocalDate postDate;
+
+    private LocalDate dueDate;
 }

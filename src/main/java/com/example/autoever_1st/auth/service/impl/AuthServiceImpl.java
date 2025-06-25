@@ -91,6 +91,7 @@ public class AuthServiceImpl implements AuthService {
         return MemberResponseDto.of(saved);
     }
 
+    @Transactional
     @Override
     public LoginResponseDto login(LoginReqDto loginReqDto) {
         Member member = memberRepository.findByEmailWithPosition(loginReqDto.getEmail())
@@ -117,11 +118,11 @@ public class AuthServiceImpl implements AuthService {
                     .build();
             refreshTokenRepository.save(refreshToken);
 
-            MemberResponseDto memberResponseDto = MemberResponseDto.of(member);
+            member.getPosition();
 
             return LoginResponseDto.builder()
                     .tokenDto(tokenDto)
-                    .memberResponseDto(memberResponseDto)
+                    .memberResponseDto(MemberResponseDto.of(member))
                     .build();
         } catch (BadCredentialsException e) {
             throw new ValidationException("이메일 또는 비밀번호가 일치하지 않습니다.", CustomStatus.INVALID_INPUT);
