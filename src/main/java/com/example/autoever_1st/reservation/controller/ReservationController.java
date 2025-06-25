@@ -5,9 +5,11 @@ import com.example.autoever_1st.reservation.dto.req.ReservationReqDto;
 import com.example.autoever_1st.reservation.dto.req.RoomTimeReqDto;
 import com.example.autoever_1st.reservation.dto.res.ReservationStatusDto;
 import com.example.autoever_1st.reservation.dto.res.ReservedTimeDto;
+import com.example.autoever_1st.reservation.scheduler.ReservationCleanupScheduler;
 import com.example.autoever_1st.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 

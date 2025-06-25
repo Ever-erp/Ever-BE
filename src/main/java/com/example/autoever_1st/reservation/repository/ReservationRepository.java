@@ -18,7 +18,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     boolean existsByRoomNumAndStartTimeAndReservationDate(int roomNum, int startTime, LocalDate reservationDate);
     void deleteByReservationDateBefore(LocalDate date);
 
-    @Query("SELECT r FROM Reservation r WHERE r.roomNum = :roomNum AND r.startTime = :startTime AND r.reservationDate = :date AND r.member_id = :member_id")
+    @Query("SELECT r FROM Reservation r WHERE r.roomNum = :roomNum AND r.startTime = :startTime AND r.reservationDate = :date AND r.member = :member")
     Optional<Reservation> findByRoomNumAndStartTimeAndDateAndMember(@Param("roomNum") int roomNum, @Param("startTime") int startTime,
-                                                                    @Param("date") LocalDate date, @Param("member_id") Long member_id);
+                                                                    @Param("date") LocalDate date, @Param("member") Member member);
 }
