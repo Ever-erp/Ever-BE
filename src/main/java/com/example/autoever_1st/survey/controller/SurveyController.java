@@ -1,6 +1,10 @@
 package com.example.autoever_1st.survey.controller;
 
+import com.example.autoever_1st.auth.entities.Member;
+import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
+import com.example.autoever_1st.common.exception.CustomStatus;
+import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.survey.dto.req.SurveyCreateDto;
 import com.example.autoever_1st.survey.dto.res.SurveyResDto;
 import com.example.autoever_1st.survey.entities.Survey;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SurveyController {
     private final SurveyService surveyService;
+    private final MemberRepository memberRepository;
 
     @GetMapping("/{uuid}")
     public ApiResponse<SurveyResDto> getSurvey(@PathVariable String uuid) {
@@ -27,14 +32,21 @@ public class SurveyController {
     }
 
     @GetMapping("/page")
-    public ApiResponse<Page<SurveyResDto>> getSurveysForAdmin(@RequestParam int page, @RequestParam int size, Authentication authentication) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<SurveyResDto> dtoPage = surveyService.getSurveyPage(pageable, authentication);
-        return ApiResponse.success(dtoPage, HttpStatus.OK.value());
-    }
+    public ApiResponse<Page<SurveyResDto>> getSurveyPage(@RequestParam int page, @RequestParam int size, Authentication authentication) {
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
 
-//    public ApiResponse<Void> createSurvey(@RequestBody SurveyCreateDto surveyCreateDto) { // 보류
-//        surveyService.createSurvey(surveyCreateDto);
-//        return ApiResponse.success(null, HttpStatus.OK.value());
-//    }
+        String role = member.getPosition().getRole();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<SurveyResDto> surveyPage;
+        if ("관리자".equals(role)) {
+            surveyPage = surveyService.getSurveyPageForAdmin(pageable);
+        } else {
+            surveyPage = surveyService.getSurveyPageForUser(member.getId(), pageable);
+        }
+
+        return ApiResponse.success(surveyPage, HttpStatus.OK.value());
+    }
 }

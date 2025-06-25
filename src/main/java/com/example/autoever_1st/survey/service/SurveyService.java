@@ -8,5 +8,6 @@ import org.springframework.security.core.Authentication;
 
 public interface SurveyService {
     SurveyResDto getSurvey(String uuid);
-    Page<SurveyResDto> getSurveyPage(Pageable pageable, Authentication authentication);
+    Page<SurveyResDto> getSurveyPageForAdmin(Pageable pageable);
+    Page<SurveyResDto> getSurveyPageForUser(Long memberId, Pageable pageable);
 }
