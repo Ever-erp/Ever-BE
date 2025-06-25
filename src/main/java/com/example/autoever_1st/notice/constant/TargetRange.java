@@ -1,4 +1,4 @@
-package com.example.autoever_1st.notice.model;
+package com.example.autoever_1st.notice.constant;
 
 public enum TargetRange {
     ALL_TARGETRANGE,    // 전체

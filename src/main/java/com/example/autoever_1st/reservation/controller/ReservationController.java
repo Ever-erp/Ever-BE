@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/reservation")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class ReservationController {
     private final ReservationService reservationService;
     @GetMapping("/status")
