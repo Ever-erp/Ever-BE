@@ -14,6 +14,7 @@ import com.example.autoever_1st.notice.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +32,13 @@ public class NoticeServiceImpl implements NoticeService {
 
     // 공지 생성 - NoticeWriteDto와 memberId를 받아 Notice 엔티티 생성 후 저장
     @Override @Transactional
-    public NoticeDto createNotice(NoticeWriteDto dto, Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberId));
-
+    public NoticeDto createNotice(NoticeWriteDto dto, Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberEmail));
+//        if (member.getPosition().getRole().equals( "(* 해당하는 role 값의 문자열 *)" )) {
+//                throw new SecurityException("관리자만 공지를 작성할 수 있습니다.");
+//            }
         Notice notice = new Notice();
         notice.setTitle(dto.getTitle());
         notice.setContents(dto.getContents());
@@ -90,10 +94,15 @@ public class NoticeServiceImpl implements NoticeService {
 
     // 공지 전체 수정
     @Override @Transactional
-    public NoticeDto updateNotice(Long id, NoticeWriteDto dto) {
+    public NoticeDto updateNotice(Long id, NoticeWriteDto dto,Authentication authentication) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Notice not found: " + id));
-
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberEmail));
+//        if (member.getPosition().getRole().equals( "(* 해당하는 role 값의 문자열 *)" )) {
+//                throw new SecurityException("관리자만 공지를 작성할 수 있습니다.");
+//            }
         notice.setTargetRange(dto.getTargetRange());
         notice.setTitle(dto.getTitle());
         notice.setContents(dto.getContents());
@@ -104,10 +113,15 @@ public class NoticeServiceImpl implements NoticeService {
 
     // 공지 부분 수정(인데 어차피 공지 전체 수정으로 다 될 듯)
     @Override @Transactional
-    public NoticeDto updateNoticePartial(Long id, NoticeWriteDto dto) {
+    public NoticeDto updateNoticePartial(Long id, NoticeWriteDto dto,Authentication authentication) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Notice not found: " + id));
-
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberEmail));
+//        if (member.getPosition().getRole().equals( "(* 해당하는 role 값의 문자열 *)" )) {
+//                throw new SecurityException("관리자만 공지를 작성할 수 있습니다.");
+//            }
         // 예시: null인 필드는 업데이트하지 않음
         if (dto.getTitle() != null) {
             notice.setTitle(dto.getTitle());
@@ -145,9 +159,15 @@ public class NoticeServiceImpl implements NoticeService {
 
     // 공지 삭제
     @Override @Transactional
-    public void deleteNotice(Long id) {
-        noticeRepository.deleteById(id);
-    }
+    public void deleteNotice(Long id,Authentication authentication) {
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Notice not found: " + id));
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberEmail));}
+//        if (member.getPosition().getRole().equals( "(* 해당하는 role 값의 문자열 *)" )) {
+//                throw new SecurityException("관리자만 공지를 작성할 수 있습니다.");
+//            }
 
     // 공지 조회 DTO 변환
     public NoticeDto toDto(Notice notice) {
