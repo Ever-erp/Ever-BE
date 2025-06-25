@@ -84,6 +84,14 @@ public class ReservationImpl implements ReservationService {
         if (todayCount >= 2) {
             throw new ValidationException("하루 최대 2회까지 예약할 수 있습니다.", CustomStatus.INVALID_INPUT);
         }
+        // 에약 시간 8시부터 20시까지
+        if (reservationReqDto.getStartTime() < 8 || reservationReqDto.getStartTime() > 20) {
+            throw new ValidationException("하루 최대 2회까지 예약할 수 있습니다.", CustomStatus.INVALID_INPUT);
+        }
+        // 예약 인원 제한
+        if (reservationReqDto.getHeadCount() > 10) {
+            throw new ValidationException("예약 인원은 최대 10명까지 가능합니다.", CustomStatus.INVALID_INPUT);
+        }
         // 중복 시간 예약 방지
         boolean alreadyReserved = reservationRepository.existsByRoomNumAndStartTimeAndReservationDate(
                 reservationReqDto.getRoomNum(), reservationReqDto.getStartTime(), today);
@@ -102,4 +110,19 @@ public class ReservationImpl implements ReservationService {
 
         reservationRepository.save(reservation);
     }
+
+    @Override
+    public void cancelReservation(int roomNum, int startTime, Authentication authentication) {
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        LocalDate today = LocalDate.now();
+
+        Reservation reservation = reservationRepository.findByRoomNumAndStartTimeAndDateAndMember(roomNum, startTime, today, member)
+                .orElseThrow(() -> new DataNotFoundException("해당 예약을 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        reservationRepository.delete(reservation);
+    }
+
 }
