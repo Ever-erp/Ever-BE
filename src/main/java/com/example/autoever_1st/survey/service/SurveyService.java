@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
 public interface SurveyService {
-    SurveyResDto getSurvey(String uuid);
-    Page<SurveyResDto> getSurveyPageForAdmin(Pageable pageable);
-    Page<SurveyResDto> getSurveyPageForUser(Long memberId, Pageable pageable);
+    SurveyResDto getSurvey(String uuid, Authentication authentication);
+    Page<SurveyResDto> getSurveyPage(String email, int page, int size);
+    void createSurvey(SurveyCreateDto surveyCreateDto);
+//    Page<SurveyResDto> getSurveyPageForAdmin(Pageable pageable);
+//    Page<SurveyResDto> getSurveyPageForUser(Long memberId, Pageable pageable);
 }

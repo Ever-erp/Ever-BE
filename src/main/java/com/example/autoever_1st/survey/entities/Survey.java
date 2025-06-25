@@ -25,6 +25,8 @@ public class Survey extends TimeStamp {
 
     private String status;
 
+    private int surveySize;
+
     @Column(columnDefinition = "TEXT")
     private String question;
 
