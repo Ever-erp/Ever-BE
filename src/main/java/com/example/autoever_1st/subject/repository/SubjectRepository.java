@@ -1,4 +1,4 @@
-package com.example.autoever_1st.class_schedule.repository;
+package com.example.autoever_1st.subject.repository;
 
 import com.example.autoever_1st.organization.entities.ClassSchedule;
 import com.example.autoever_1st.organization.repository.ClassScheduleRepository;
@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ExtendedClassScheduleRepository extends ClassScheduleRepository {
 
-    // 반(ID)으로 수업 찾기
+    // 반(ClassID)으로 수업 찾기
     List<ClassSchedule> findByClassEntityId(Long classId);
 
     // 수업명으로 검색

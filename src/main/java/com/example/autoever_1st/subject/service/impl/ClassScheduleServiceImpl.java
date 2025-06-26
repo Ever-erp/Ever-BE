@@ -1,10 +1,10 @@
-package com.example.autoever_1st.class_schedule.service.impl;
+package com.example.autoever_1st.subject.service.impl;
 
-import com.example.autoever_1st.class_schedule.dto.ExtendedClassScheduleDto;
-import com.example.autoever_1st.class_schedule.service.ClassScheduleService;
+import com.example.autoever_1st.subject.dto.ExtendedClassScheduleDto;
+import com.example.autoever_1st.subject.repository.ExtendedClassScheduleRepository;
+import com.example.autoever_1st.subject.service.ClassScheduleService;
 import com.example.autoever_1st.organization.dto.common.ClassScheduleDto;
 import com.example.autoever_1st.organization.entities.ClassSchedule;
-import com.example.autoever_1st.organization.repository.ClassScheduleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,23 +18,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ClassScheduleServiceImpl implements ClassScheduleService {
 
-    private final ClassScheduleRepository classScheduleRepository;
+    private final ExtendedClassScheduleRepository extendedClassScheduleRepository;
 
     @Transactional  @Override
     public List<ExtendedClassScheduleDto> findAll() {
         log.info("전체 수업 일정 조회");
-        return classScheduleRepository.findAll()
+        return extendedClassScheduleRepository.findAll()
                 .stream()
                 .map(ClassScheduleServiceImpl::fromEntity)
                 .collect(Collectors.toList());
     }
-
     // 반(ID)으로 수업 일정 조회
-    @Transactional
-    @Override
-    public List<ExtendedClassScheduleDto> findByClassId(ClassSchedule classSchedule, Long classId) {
+    @Transactional @Override
+    public List<ExtendedClassScheduleDto> findByClassId(Long classId) {
         log.info("반 ID로 수업 일정 조회: {}", classId);
-        return classScheduleRepository.findByClassEntityId(classId)
+        return extendedClassScheduleRepository.findByClassEntityId(classId)
                 .stream()
                 .map(ClassScheduleServiceImpl::fromEntity)
                 .collect(Collectors.toList());
@@ -45,7 +43,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     @Override
     public List<ExtendedClassScheduleDto> findBySubjectName(String subjectName) {
         log.info("수업명으로 일정 조회: {}", subjectName);
-        return classScheduleRepository.findBySubjectName(subjectName)
+        return extendedClassScheduleRepository.findBySubjectNameContaining(subjectName)
                 .stream()
                 .map(ClassScheduleServiceImpl::fromEntity)
                 .collect(Collectors.toList());
@@ -56,7 +54,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     @Override
     public List<ExtendedClassScheduleDto> findByClassDesc(String classDesc) {
         log.info("수업 설명으로 일정 조회: {}", classDesc);
-        return classScheduleRepository.findByClassDesc(classDesc)
+        return extendedClassScheduleRepository.findByClassDesc(classDesc)
                 .stream()
                 .map(ClassScheduleServiceImpl::fromEntity)
                 .collect(Collectors.toList());

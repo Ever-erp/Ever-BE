@@ -1,4 +1,4 @@
-package com.example.autoever_1st.class_schedule.dto;
+package com.example.autoever_1st.subject.dto;
 
 import com.example.autoever_1st.organization.dto.common.ClassScheduleDto;
 import lombok.*;
