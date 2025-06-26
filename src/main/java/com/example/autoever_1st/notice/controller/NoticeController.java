@@ -28,7 +28,7 @@ public class NoticeController {
         return ApiResponse.success(noticeServiceImpl.createNotice(dto, authentication), 201);
     }
 
-    // 공지 글 번호(noticeId) 검색
+    // 공지 글 번호(Id) 검색
     @GetMapping("/{id}")
     public ApiResponse<NoticeDto> get(@PathVariable Long id) {
         return ApiResponse.success(noticeServiceImpl.getNotice(id), 200);
@@ -46,7 +46,7 @@ public class NoticeController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("noticeId").descending()));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("id").descending()));
         Page<NoticeDto> result = (searchType != null && text != null && !text.isBlank())
                 ? noticeServiceImpl.searchNotices(searchType, text, pageable)
                 : noticeServiceImpl.getAllNotices(pageable);
@@ -67,7 +67,7 @@ public class NoticeController {
         if (type == null) {
             type = Type.ALL_TYPE;
         }
-        Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("noticeId").descending()));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("id").descending()));
         return ApiResponse.success(noticeServiceImpl.searchByTargetRangeAndType(targetRange, type, pageable), 200);
     }
 
