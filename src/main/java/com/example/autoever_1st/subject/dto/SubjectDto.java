@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExtendedClassScheduleDto {
+public class SubjectDto {
     private ClassScheduleDto extended;
 }

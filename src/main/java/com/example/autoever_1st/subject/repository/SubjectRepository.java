@@ -5,7 +5,7 @@ import com.example.autoever_1st.organization.repository.ClassScheduleRepository;
 
 import java.util.List;
 
-public interface ExtendedClassScheduleRepository extends ClassScheduleRepository {
+public interface SubjectRepository extends ClassScheduleRepository {
 
     // 반(ClassID)으로 수업 찾기
     List<ClassSchedule> findByClassEntityId(Long classId);
