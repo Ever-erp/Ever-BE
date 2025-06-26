@@ -6,8 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-public class SurveyCreateDto {
-    private String surveyId; // uuid
+public class SurveyUpdateDto {
     private String surveyTitle;
     private String surveyDesc;
     private LocalDate dueDate;
