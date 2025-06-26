@@ -14,7 +14,7 @@ import java.util.List;
 public interface NoticeService {
     // 공지 작성
     NoticeDto createNotice(NoticeWriteDto dto, Authentication authentication);
-    // 공지 글 번호(noticeId) 검색
+    // 공지 글 번호(Id) 검색
     NoticeDto getNotice(Long id);
     // 공지 전체 조회(페이징)
     Page<NoticeDto> getAllNotices(Pageable pageable);

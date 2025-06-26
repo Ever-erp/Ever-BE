@@ -27,8 +27,8 @@ public class NoticeJdbcDaoImpl implements NoticeJdbcDao {
     @Override
     public PageImpl<NoticeDto> searchByKeyword(SearchType type, String text, Pageable pageable) {
         String baseQuery = """
-    SELECT\s
-        n.notice_id AS noticeId,
+    SELECT
+        n._id AS Id,
         n.title,
         n.writer,
         n.contents,
@@ -47,11 +47,11 @@ public class NoticeJdbcDaoImpl implements NoticeJdbcDao {
             case WRITER -> whereClause = "WHERE n.writer LIKE ?";
         }
 
-        String orderBy = " ORDER BY n.is_pinned DESC, n.notice_id DESC ";
+        String orderBy = " ORDER BY n.is_pinned DESC, n.id DESC ";
         String limitOffset = " LIMIT ? OFFSET ? ";
         String finalQuery = baseQuery + whereClause + orderBy + limitOffset;
         String countQuery = """
-    SELECT COUNT(*) FROM notice n\s
+    SELECT COUNT(*) FROM notice n
 """ + whereClause;
 
         int total = jdbcTemplate.queryForObject(countQuery, Integer.class, paramValue);
