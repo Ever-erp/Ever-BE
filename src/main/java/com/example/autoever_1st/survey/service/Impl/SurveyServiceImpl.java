@@ -5,7 +5,9 @@ import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
+import com.example.autoever_1st.survey.dto.SurveySubmitDto;
 import com.example.autoever_1st.survey.dto.req.SurveyCreateDto;
+import com.example.autoever_1st.survey.dto.req.SurveyUpdateDto;
 import com.example.autoever_1st.survey.dto.res.SurveyResDto;
 import com.example.autoever_1st.survey.entities.MemberSurvey;
 import com.example.autoever_1st.survey.entities.Survey;
@@ -36,6 +38,7 @@ public class SurveyServiceImpl implements SurveyService {
     private final MemberSurveyRepository memberSurveyRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Transactional
     @Override
     public SurveyResDto getSurvey(String uuid, Authentication authentication) {
         String email = authentication.getName();
@@ -58,12 +61,13 @@ public class SurveyServiceImpl implements SurveyService {
         return surveyResDto;
     }
 
+    @Transactional
     @Override
     public Page<SurveyResDto> getSurveyPage(String email, int page, int size) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
         String role = member.getPosition().getRole();
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("registedAt").descending());
         Page<Survey> surveys;
 
         if ("관리자".equals(role)) {
@@ -118,20 +122,64 @@ public class SurveyServiceImpl implements SurveyService {
         surveyRepository.save(survey);
     }
 
-//    @Override
-//    public Page<SurveyResDto> getSurveyPageForAdmin(Pageable pageable) {
-//        Page<Survey> page = surveyRepository.findAll(pageable);
-//        return page.map(SurveyResDto::toDto);
-//    }
+    @Override
+    @Transactional
+    public void submitSurvey(String email, String surveyId, SurveySubmitDto surveySubmitDto) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        Survey survey = surveyRepository.findByUuid(surveyId)
+                .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+        if (memberSurveyRepository.existsBySurveyAndMember(survey, member)) {
+            throw new ValidationException("이미 응답한 설문입니다.", CustomStatus.INVALID_INPUT);
+        }
+        String answerStr;
+        try {
+            answerStr = objectMapper.writeValueAsString(surveySubmitDto.getAnswerList());
+        } catch (JsonProcessingException e) {
+            throw new ValidationException("응답을 문자열로 변환하는 데 실패했습니다.", CustomStatus.INVALID_INPUT);
+        }
+        MemberSurvey memberSurvey = MemberSurvey.builder()
+                .member(member)
+                .survey(survey)
+                .answer(answerStr)
+                .build();
 
-//    @Override
-//    public Page<SurveyResDto> getSurveyPageForUser(Long memberId, Pageable pageable) {
-//        List<Long> answeredSurveyIds = memberSurveyRepository.findDistinctSurveyIdsByMemberId(memberId);
-//        if (answeredSurveyIds.isEmpty()) {
-//            throw new DataNotFoundException("응답한 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA);
-//        }
-//        Page<Survey> surveys = surveyRepository.findByIdIn(answeredSurveyIds, pageable);
-//
-//        return surveys.map(SurveyResDto::toDto);
-//    }
+        memberSurveyRepository.save(memberSurvey);
+    }
+
+    @Override
+    @Transactional
+    public void updateSurvey(String email, String surveyId, SurveyUpdateDto surveyUpdateDto) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        String role = member.getPosition().getRole();
+        if (!"관리자".equals(role)) {
+            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+        if (surveyUpdateDto.getDueDate().isBefore(LocalDate.now())) {
+            throw new ValidationException("이미 마감된 설문은 수정할 수 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+        Survey survey = surveyRepository.findByUuid(surveyId)
+                .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        String questionStr;
+        String metaStr;
+        try {
+            questionStr = objectMapper.writeValueAsString(surveyUpdateDto.getSurveyQuestion());
+            metaStr = objectMapper.writeValueAsString(surveyUpdateDto.getSurveyQuestionMeta());
+        } catch (JsonProcessingException e) {
+            throw new ValidationException("질문을 문자열로 변환하는 데 실패했습니다.", CustomStatus.INVALID_INPUT);
+        }
+        // 필드 업데이트
+        survey.updateSurvey(
+                surveyUpdateDto.getSurveyTitle(),
+                surveyUpdateDto.getSurveyDesc(),
+                surveyUpdateDto.getDueDate(),
+                surveyUpdateDto.getStatus(),
+                surveyUpdateDto.getSurveySize(),
+                questionStr,
+                metaStr
+        );
+    }
 }

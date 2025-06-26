@@ -5,7 +5,9 @@ import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.common.dto.response.ApiResponse;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
+import com.example.autoever_1st.survey.dto.SurveySubmitDto;
 import com.example.autoever_1st.survey.dto.req.SurveyCreateDto;
+import com.example.autoever_1st.survey.dto.req.SurveyUpdateDto;
 import com.example.autoever_1st.survey.dto.res.SurveyResDto;
 import com.example.autoever_1st.survey.entities.Survey;
 import com.example.autoever_1st.survey.service.SurveyService;
@@ -40,5 +42,21 @@ public class SurveyController {
     public ApiResponse<Void> createSurvey(@RequestBody SurveyCreateDto surveyCreateDto) {
         surveyService.createSurvey(surveyCreateDto);
         return ApiResponse.success(null, HttpStatus.CREATED.value());
+    }
+
+    @PostMapping("/{surveyId}/submit")
+    public ApiResponse<Void> submitSurvey(@PathVariable String surveyId, @RequestBody SurveySubmitDto surveySubmitDto,
+                                            Authentication authentication) {
+        String email = authentication.getName();
+        surveyService.submitSurvey(email, surveyId, surveySubmitDto);
+        return ApiResponse.success(null, HttpStatus.OK.value());
+    }
+
+    @PatchMapping("/{surveyId}")
+    public ApiResponse<Void> updateSurvey(@PathVariable String surveyId, @RequestBody SurveyUpdateDto surveyUpdateDto,
+                                            Authentication authentication) {
+        String email = authentication.getName();
+        surveyService.updateSurvey(email, surveyId, surveyUpdateDto);
+        return ApiResponse.success(null, HttpStatus.OK.value());
     }
 }

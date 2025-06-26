@@ -14,4 +14,5 @@ public interface MemberSurveyRepository extends JpaRepository<MemberSurvey, Long
     @Query("SELECT DISTINCT ms.survey.id FROM MemberSurvey ms WHERE ms.member.id = :memberId")
     List<Long> findDistinctSurveyIdsByMemberId(@Param("memberId") Long memberId);
     Optional<MemberSurvey> findBySurveyAndMember(Survey survey, Member member);
+    boolean existsBySurveyAndMember(Survey survey, Member member);
 }
