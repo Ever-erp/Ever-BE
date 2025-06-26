@@ -8,7 +8,10 @@ import com.example.autoever_1st.common.exception.exception_class.business.Valida
 import com.example.autoever_1st.survey.dto.SurveySubmitDto;
 import com.example.autoever_1st.survey.dto.req.SurveyCreateDto;
 import com.example.autoever_1st.survey.dto.req.SurveyUpdateDto;
+import com.example.autoever_1st.survey.dto.res.MemberAnswerDto;
+import com.example.autoever_1st.survey.dto.res.SurveyMemberResDto;
 import com.example.autoever_1st.survey.dto.res.SurveyResDto;
+import com.example.autoever_1st.survey.dto.res.SurveyWithMembersResDto;
 import com.example.autoever_1st.survey.entities.MemberSurvey;
 import com.example.autoever_1st.survey.entities.Survey;
 import com.example.autoever_1st.survey.repository.MemberSurveyRepository;
@@ -85,7 +88,13 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     @Transactional
-    public void createSurvey(SurveyCreateDto surveyCreateDto) {
+    public void createSurvey(SurveyCreateDto surveyCreateDto, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        String role = member.getPosition().getRole();
+        if (!"관리자".equals(role)) {
+            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
+        }
         // uuid 유효성 체크 or 생성
         String uuid = surveyCreateDto.getSurveyId();
         if (uuid == null || uuid.isBlank()) {
@@ -127,8 +136,15 @@ public class SurveyServiceImpl implements SurveyService {
     public void submitSurvey(String email, String surveyId, SurveySubmitDto surveySubmitDto) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        String role = member.getPosition().getRole();
+        if (!"학생".equals(role)) {
+            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
+        }
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+        if (survey.getDueDate().isBefore(LocalDate.now())) {
+            throw new ValidationException("이미 마감된 설문은 제출할 수 없습니다.", CustomStatus.INVALID_INPUT);
+        }
         if (memberSurveyRepository.existsBySurveyAndMember(survey, member)) {
             throw new ValidationException("이미 응답한 설문입니다.", CustomStatus.INVALID_INPUT);
         }
@@ -244,5 +260,60 @@ public class SurveyServiceImpl implements SurveyService {
             memberSurveyRepository.deleteBySurvey(survey);
             surveyRepository.delete(survey);
         }
+    }
+
+    @Transactional
+    @Override
+    public SurveyMemberResDto getSurveyWithMember(String surveyId, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        String role = member.getPosition().getRole();
+        if (!"학생".equals(role)) {
+            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+        Survey survey = surveyRepository.findByUuid(surveyId)
+                .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+        MemberSurvey memberSurvey = memberSurveyRepository.findBySurveyAndMember(survey, member)
+                .orElseThrow(() -> new DataNotFoundException("응답 정보가 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        SurveyResDto surveyDto = SurveyResDto.toDto(survey);
+        List<String> answers = memberSurvey.getAnswerList();
+
+        return SurveyMemberResDto.builder()
+                .survey(surveyDto)
+                .member(MemberAnswerDto.builder()
+                        .memberId(member.getId())
+                        .memberName(member.getName())
+                        .answer(answers)
+                        .build())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public SurveyWithMembersResDto getSurveyWithMembers(String surveyId, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        String role = member.getPosition().getRole();
+        if (!"관리자".equals(role)) {
+            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+        Survey survey = surveyRepository.findByUuid(surveyId)
+                .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurvey(survey);
+
+        List<MemberAnswerDto> memberInfos = memberSurveys.stream()
+                .map(ms -> MemberAnswerDto.builder()
+                        .memberId(ms.getMember().getId())
+                        .memberName(ms.getMember().getName())
+                        .answer(ms.getAnswerList())
+                        .build())
+                .toList();
+
+        return SurveyWithMembersResDto.builder()
+                .survey(SurveyResDto.toDto(survey))
+                .members(memberInfos)
+                .build();
     }
 }

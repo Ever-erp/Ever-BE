@@ -16,4 +16,5 @@ public interface MemberSurveyRepository extends JpaRepository<MemberSurvey, Long
     Optional<MemberSurvey> findBySurveyAndMember(Survey survey, Member member);
     boolean existsBySurveyAndMember(Survey survey, Member member);
     void deleteBySurvey(Survey survey);
+    List<MemberSurvey> findBySurvey(Survey survey);
 }
