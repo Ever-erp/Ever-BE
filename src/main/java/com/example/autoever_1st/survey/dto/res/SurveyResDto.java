@@ -29,11 +29,14 @@ public class SurveyResDto {
     private Integer surveySize;
     private List<String> surveyQuestion;
     private List<List<String>> surveyQuestionMeta;
+    private String className;
+    private int answeredCount;
+    private int classTotalMemberCount;
     private List<String> surveyAnswer;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static SurveyResDto toDto(Survey survey) {
+    public static SurveyResDto toDto(Survey survey, String className, int answeredCount, int totalMemberCount) {
         List<String> questions = parseQuestions(survey.getQuestion());
         List<List<String>> metaList = parseQuestionMeta(survey.getQuestionMeta());
 
@@ -47,11 +50,14 @@ public class SurveyResDto {
                 .surveySize(questions.size())
                 .surveyQuestion(questions)
                 .surveyQuestionMeta(metaList)
+                .className(className)
+                .answeredCount(answeredCount)
+                .classTotalMemberCount(totalMemberCount)
                 .build();
     }
 
-    public static SurveyResDto withAnswer(Survey survey, List<String> answers) {
-        SurveyResDto surveyResDto = toDto(survey);
+    public static SurveyResDto withAnswer(Survey survey, String className, int answeredCount, int totalMemberCount, List<String> answers) {
+        SurveyResDto surveyResDto = toDto(survey, className, answeredCount, totalMemberCount);
         surveyResDto.surveyAnswer = answers;
         return surveyResDto;
     }
