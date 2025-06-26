@@ -1,13 +1,14 @@
 package com.example.autoever_1st.organization.dto.common;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ClassScheduleDto {
     private Long id;
     private String subjectName;

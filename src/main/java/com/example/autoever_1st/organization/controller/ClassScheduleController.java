@@ -1,7 +1,7 @@
-package com.example.autoever_1st.subject.controller;
+package com.example.autoever_1st.organization.controller;
 
-import com.example.autoever_1st.subject.dto.SubjectDto;
-import com.example.autoever_1st.subject.service.SubjectService;
+import com.example.autoever_1st.organization.dto.common.ClassScheduleDto;
+import com.example.autoever_1st.organization.service.ClassScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,45 +13,45 @@ import java.util.List;
 @RequestMapping("/api/class-schedules")
 @RequiredArgsConstructor
 @Slf4j
-public class SubjectController {
+public class ClassScheduleController {
 
-    private final SubjectService subjectService;
+    private final ClassScheduleService classScheduleService;
 
 
 //    전체 수업 스케줄 조회
 //    * GET /api/class-schedules
 
     @GetMapping
-    public ResponseEntity<List<SubjectDto>> getAllClassSchedules() {
+    public ResponseEntity<List<ClassScheduleDto>> getAllClassSchedules() {
         log.info("전체 수업 스케줄 조회 요청");
-        List<SubjectDto> classSchedules = subjectService.findAll();
+        List<ClassScheduleDto> classSchedules = classScheduleService.findAll();
         return ResponseEntity.ok(classSchedules);
     }
 
 //    ID로 수업 스케줄 조회
 //    * GET /api/class-schedules/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<List<SubjectDto>> getClassScheduleById(@PathVariable Long classId) {
+    public ResponseEntity<List<ClassScheduleDto>> getClassScheduleById(@PathVariable Long classId) {
         log.info("수업 스케줄 조회 요청 - ID: {}", classId);
-        List<SubjectDto> classSchedules = subjectService.findByClassId(classId);
+        List<ClassScheduleDto> classSchedules = classScheduleService.findByClassId(classId);
         return ResponseEntity.ok(classSchedules);
     }
 
 //    클래스별 수업 스케줄 조회
 //    * GET /api/class-schedules/class/{classId}
     @GetMapping("/class/{classId}")
-    public ResponseEntity<List<SubjectDto>> findBySubjectName(@PathVariable String subjectName) {
+    public ResponseEntity<List<ClassScheduleDto>> findBySubjectName(@PathVariable String subjectName) {
         log.info("클래스별 수업 스케줄 조회 요청 - 클래스명: {}", subjectName);
-        List<SubjectDto> classSchedules = subjectService.findBySubjectName(subjectName);
+        List<ClassScheduleDto> classSchedules = classScheduleService.findBySubjectName(subjectName);
         return ResponseEntity.ok(classSchedules);
     }
 
 //    수업명으로 검색
 //    * GET /api/class-schedules/search?keyword=검색어
     @GetMapping("/search")
-    public ResponseEntity<List<SubjectDto>> searchClassSchedules(@RequestParam String keyword) {
+    public ResponseEntity<List<ClassScheduleDto>> searchClassSchedules(@RequestParam String keyword) {
         log.info("수업명 검색 요청 - 키워드: {}", keyword);
-        List<SubjectDto> classSchedules = subjectService.findByClassDesc(keyword);
+        List<ClassScheduleDto> classSchedules = classScheduleService.findByClassDesc(keyword);
         return ResponseEntity.ok(classSchedules);
     }
 ///*
