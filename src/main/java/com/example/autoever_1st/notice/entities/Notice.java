@@ -19,10 +19,6 @@ import java.time.LocalDate;
 public class Notice extends TimeStamp {       // extends TimeStamp (ID 중복 문제)
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long noticeId;                  // 글 번호
-
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    private Long id;
 
     @Enumerated(EnumType.STRING)
