@@ -65,9 +65,9 @@ public class SurveyServiceImpl implements SurveyService {
         if ("관리자".equals(role)) {
             surveyResDto = SurveyResDto.toDto(survey, className, answeredCount, classMemberCount);
         } else {
-            MemberSurvey memberSurvey = memberSurveyRepository.findBySurveyAndMember(survey, member)
-                    .orElseThrow(() -> new DataNotFoundException("해당 설문에 대한 응답이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
-            surveyResDto = SurveyResDto.withAnswer(survey, className, answeredCount, classMemberCount, memberSurvey.getAnswerList());
+            surveyResDto = memberSurveyRepository.findBySurveyAndMember(survey, member)
+                    .map(memberSurvey -> SurveyResDto.withAnswer(survey, className, answeredCount, classMemberCount, memberSurvey.getAnswerList()))
+                    .orElseGet(() -> SurveyResDto.toDto(survey, className, answeredCount, classMemberCount));
         }
 
         return surveyResDto;
@@ -348,16 +348,6 @@ public class SurveyServiceImpl implements SurveyService {
 
         ClassEntity classEntity = survey.getClassEntity();
         String className = classEntity != null ? classEntity.getName() : "전체";
-
-//        List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurvey(survey);
-//
-//        List<MemberAnswerDto> answeredMembers = memberSurveys.stream()
-//                .map(ms -> MemberAnswerDto.builder()
-//                        .memberId(ms.getMember().getId())
-//                        .memberName(ms.getMember().getName())
-//                        .answer(ms.getAnswerList())
-//                        .build())
-//                .toList();
 
         // 설문에 응답한 멤버 Map <member_id, MemberSurvey>
         List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurvey(survey);
