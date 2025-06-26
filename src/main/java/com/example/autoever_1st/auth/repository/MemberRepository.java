@@ -19,4 +19,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByClassEntity(ClassEntity classEntity);
     List<Member> findByNameContaining(String name);
     List<Member> findByClassEntityIdAndNameContaining(Long classId, String name);
+    int countByClassEntity(ClassEntity classEntity);
 }

@@ -15,4 +15,5 @@ public class SurveyCreateDto {
     private Integer surveySize;
     private List<String> surveyQuestion;
     private List<List<String>> surveyQuestionMeta;
+    private String className;
 }

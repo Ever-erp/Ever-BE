@@ -5,13 +5,12 @@ import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
+import com.example.autoever_1st.organization.entities.ClassEntity;
+import com.example.autoever_1st.organization.repository.ClassEntityRepository;
 import com.example.autoever_1st.survey.dto.SurveySubmitDto;
 import com.example.autoever_1st.survey.dto.req.SurveyCreateDto;
 import com.example.autoever_1st.survey.dto.req.SurveyUpdateDto;
-import com.example.autoever_1st.survey.dto.res.MemberAnswerDto;
-import com.example.autoever_1st.survey.dto.res.SurveyMemberResDto;
-import com.example.autoever_1st.survey.dto.res.SurveyResDto;
-import com.example.autoever_1st.survey.dto.res.SurveyWithMembersResDto;
+import com.example.autoever_1st.survey.dto.res.*;
 import com.example.autoever_1st.survey.entities.MemberSurvey;
 import com.example.autoever_1st.survey.entities.Survey;
 import com.example.autoever_1st.survey.repository.MemberSurveyRepository;
@@ -20,17 +19,16 @@ import com.example.autoever_1st.survey.service.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +37,7 @@ public class SurveyServiceImpl implements SurveyService {
     private final SurveyRepository surveyRepository;
     private final MemberRepository memberRepository;
     private final MemberSurveyRepository memberSurveyRepository;
+    private final ClassEntityRepository classEntityRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
@@ -53,12 +52,22 @@ public class SurveyServiceImpl implements SurveyService {
         String role = member.getPosition().getRole();
         SurveyResDto surveyResDto;
 
+        ClassEntity classEntity = survey.getClassEntity();
+        String className = classEntity != null ? classEntity.getName() : "전체";
+        int answeredCount = memberSurveyRepository.countBySurvey(survey);
+        int classMemberCount;
+        if (classEntity == null) {
+            classMemberCount = (int) memberRepository.count();
+        } else {
+            classMemberCount = memberRepository.countByClassEntity(classEntity);
+        }
+
         if ("관리자".equals(role)) {
-            surveyResDto = SurveyResDto.toDto(survey);
+            surveyResDto = SurveyResDto.toDto(survey, className, answeredCount, classMemberCount);
         } else {
             MemberSurvey memberSurvey = memberSurveyRepository.findBySurveyAndMember(survey, member)
                     .orElseThrow(() -> new DataNotFoundException("해당 설문에 대한 응답이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
-            surveyResDto = SurveyResDto.withAnswer(survey, memberSurvey.getAnswerList());
+            surveyResDto = SurveyResDto.withAnswer(survey, className, answeredCount, classMemberCount, memberSurvey.getAnswerList());
         }
 
         return surveyResDto;
@@ -83,7 +92,19 @@ public class SurveyServiceImpl implements SurveyService {
             surveys = surveyRepository.findByIdIn(answeredSurveyIds, pageable);
         }
 
-        return surveys.map(SurveyResDto::toDto);
+        return surveys.map(survey -> {
+            ClassEntity classEntity = survey.getClassEntity();
+            String className = classEntity != null ? classEntity.getName() : "전체";
+            int answeredCount = memberSurveyRepository.countBySurvey(survey);
+            int classMemberCount;
+            if (classEntity == null) {
+                classMemberCount = (int) memberRepository.count();
+            } else {
+                classMemberCount = memberRepository.countByClassEntity(classEntity);
+            }
+
+            return SurveyResDto.toDto(survey, className, answeredCount, classMemberCount);
+        });
     }
 
     @Override
@@ -116,6 +137,9 @@ public class SurveyServiceImpl implements SurveyService {
             throw new ValidationException("질문을 문자열로 변환하는 데 실패했습니다.", CustomStatus.INVALID_INPUT);
         }
 
+        ClassEntity classEntity = classEntityRepository.findByName(surveyCreateDto.getClassName())
+                .orElseThrow(() -> new DataNotFoundException("해당 반 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+
         Survey survey = Survey.builder()
                 .uuid(uuid)
                 .title(surveyCreateDto.getSurveyTitle())
@@ -126,6 +150,7 @@ public class SurveyServiceImpl implements SurveyService {
                 .question(questionStr)
                 .questionMeta(metaStr)
                 .postDate(LocalDate.now())
+                .classEntity(classEntity)
                 .build();
 
         surveyRepository.save(survey);
@@ -144,6 +169,9 @@ public class SurveyServiceImpl implements SurveyService {
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
         if (survey.getDueDate().isBefore(LocalDate.now())) {
             throw new ValidationException("이미 마감된 설문은 제출할 수 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+        if (!member.getClassEntity().equals(survey.getClassEntity())) {
+            throw new ValidationException("해당 설문은 귀하의 반 설문이 아닙니다.", CustomStatus.INVALID_INPUT);
         }
         if (memberSurveyRepository.existsBySurveyAndMember(survey, member)) {
             throw new ValidationException("이미 응답한 설문입니다.", CustomStatus.INVALID_INPUT);
@@ -178,6 +206,8 @@ public class SurveyServiceImpl implements SurveyService {
         }
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+        ClassEntity classEntity = classEntityRepository.findByName(surveyUpdateDto.getClassName())
+                .orElseThrow(() -> new DataNotFoundException("해당 반이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
 
         String questionStr;
         String metaStr;
@@ -195,7 +225,8 @@ public class SurveyServiceImpl implements SurveyService {
                 surveyUpdateDto.getStatus(),
                 surveyUpdateDto.getSurveySize(),
                 questionStr,
-                metaStr
+                metaStr,
+                classEntity
         );
     }
 
@@ -208,6 +239,9 @@ public class SurveyServiceImpl implements SurveyService {
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
         if (survey.getDueDate().isBefore(LocalDate.now())) {
             throw new ValidationException("이미 마감된 설문은 수정할 수 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+        if (!member.getClassEntity().equals(survey.getClassEntity())) {
+            throw new ValidationException("해당 설문은 귀하의 반 설문이 아닙니다.", CustomStatus.INVALID_INPUT);
         }
 
         MemberSurvey memberSurvey = memberSurveyRepository.findBySurveyAndMember(survey, member)
@@ -273,11 +307,22 @@ public class SurveyServiceImpl implements SurveyService {
         }
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
-        MemberSurvey memberSurvey = memberSurveyRepository.findBySurveyAndMember(survey, member)
-                .orElseThrow(() -> new DataNotFoundException("응답 정보가 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
 
-        SurveyResDto surveyDto = SurveyResDto.toDto(survey);
-        List<String> answers = memberSurvey.getAnswerList();
+        ClassEntity classEntity = survey.getClassEntity();
+        String className = classEntity != null ? classEntity.getName() : "전체";
+
+        int answeredCount = memberSurveyRepository.countBySurvey(survey);
+        int classMemberCount;
+        if (classEntity == null) {
+            classMemberCount = (int) memberRepository.count();
+        } else {
+            classMemberCount = memberRepository.countByClassEntity(classEntity);
+        }
+
+        SurveyResDto surveyDto = SurveyResDto.toDto(survey, className, answeredCount, classMemberCount);
+
+        List<String> answers = memberSurveyRepository.findBySurveyAndMember(survey, member)
+                .map(MemberSurvey::getAnswerList).orElse(null);
 
         return SurveyMemberResDto.builder()
                 .survey(surveyDto)
@@ -301,19 +346,50 @@ public class SurveyServiceImpl implements SurveyService {
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
 
-        List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurvey(survey);
+        ClassEntity classEntity = survey.getClassEntity();
+        String className = classEntity != null ? classEntity.getName() : "전체";
 
-        List<MemberAnswerDto> memberInfos = memberSurveys.stream()
-                .map(ms -> MemberAnswerDto.builder()
-                        .memberId(ms.getMember().getId())
-                        .memberName(ms.getMember().getName())
-                        .answer(ms.getAnswerList())
-                        .build())
-                .toList();
+//        List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurvey(survey);
+//
+//        List<MemberAnswerDto> answeredMembers = memberSurveys.stream()
+//                .map(ms -> MemberAnswerDto.builder()
+//                        .memberId(ms.getMember().getId())
+//                        .memberName(ms.getMember().getName())
+//                        .answer(ms.getAnswerList())
+//                        .build())
+//                .toList();
+
+        // 설문에 응답한 멤버 Map <member_id, MemberSurvey>
+        List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurvey(survey);
+        Map<Long, MemberSurvey> answeredMap = memberSurveys.stream().collect(Collectors.toMap(
+                        ms -> ms.getMember().getId(),
+                        ms -> ms));
+        // 반 전체 멤버
+        List<Member> targetMembers = classEntity == null ? memberRepository.findAll() : memberRepository.findByClassEntity(classEntity);
+        // 응답한 멤버
+        List<MemberAnswerDto> answeredMembers = targetMembers.stream().filter(m -> answeredMap.containsKey(m.getId()))
+                .map(m -> {
+                    MemberSurvey ms = answeredMap.get(m.getId());
+                    return MemberAnswerDto.builder()
+                            .memberId(m.getId())
+                            .memberName(m.getName())
+                            .answer(ms.getAnswerList())
+                            .build();
+                }).toList();
+        // 응답하지 않은 멤버
+        List<NotAnsweredMemberDto> notAnsweredMembers = targetMembers.stream().filter(m -> !answeredMap.containsKey(m.getId()))
+                .map(m -> NotAnsweredMemberDto.builder()
+                        .memberId(m.getId())
+                        .memberName(m.getName())
+                        .build()).toList();
+
+        int answeredCount = memberSurveyRepository.countBySurvey(survey);
+        int classMemberCount = targetMembers.size();
 
         return SurveyWithMembersResDto.builder()
-                .survey(SurveyResDto.toDto(survey))
-                .members(memberInfos)
+                .survey(SurveyResDto.toDto(survey, className, answeredCount, classMemberCount))
+                .members(answeredMembers)
+                .notAnsweredMembers(notAnsweredMembers)
                 .build();
     }
 }

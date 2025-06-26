@@ -1,6 +1,7 @@
 package com.example.autoever_1st.survey.entities;
 
 import com.example.autoever_1st.common.entities.TimeStamp;
+import com.example.autoever_1st.organization.entities.ClassEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,8 +38,12 @@ public class Survey extends TimeStamp {
 
     private LocalDate dueDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id")
+    private ClassEntity classEntity;
+
     public void updateSurvey(String title, String desc, LocalDate dueDate, String status,
-                             Integer size, String question, String meta) {
+                             Integer size, String question, String meta, ClassEntity classEntity) {
         this.title = title;
         this.description = desc;
         this.dueDate = dueDate;
@@ -46,5 +51,6 @@ public class Survey extends TimeStamp {
         this.surveySize = size;
         this.question = question;
         this.questionMeta = meta;
+        this.classEntity = classEntity;
     }
 }
