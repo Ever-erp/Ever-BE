@@ -1,13 +1,14 @@
 package com.example.autoever_1st.notice.repository;
 
-import com.example.autoever_1st.notice.entities.Notice;
 import com.example.autoever_1st.notice.constant.TargetRange;
 import com.example.autoever_1st.notice.constant.Type;
+import com.example.autoever_1st.notice.entities.Notice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
@@ -26,4 +27,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     // 페이징 지원 시 Pageable 사용, 글 번호로 내림차순
     Page<Notice> findAllByOrderByIsPinnedDescIdDesc(Pageable pageable);
+
+    List<Notice> findByTargetDateIsNotNullAndTargetDateBetweenOrderByIsPinnedDescRegistedAtDesc(
+            LocalDate startDate, LocalDate endDate);
 }

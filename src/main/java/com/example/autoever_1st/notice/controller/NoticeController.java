@@ -6,8 +6,8 @@ import com.example.autoever_1st.notice.constant.TargetRange;
 import com.example.autoever_1st.notice.constant.Type;
 import com.example.autoever_1st.notice.dto.req.NoticeWriteDto;
 import com.example.autoever_1st.notice.dto.res.NoticeDto;
-import com.example.autoever_1st.notice.service.impl.NoticeServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.autoever_1st.notice.service.NoticeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,21 +17,21 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/notices")
+@RequiredArgsConstructor
 public class NoticeController {
 
-    @Autowired
-    private NoticeServiceImpl noticeServiceImpl;
+    private final NoticeService noticeService;
 
     // 공지 작성
     @PostMapping
     public ApiResponse<NoticeDto> create(@RequestBody NoticeWriteDto dto, Authentication authentication) {
-        return ApiResponse.success(noticeServiceImpl.createNotice(dto, authentication), 201);
+        return ApiResponse.success(noticeService.createNotice(dto, authentication), 201);
     }
 
     // 공지 글 번호(Id) 검색
     @GetMapping("/{id}")
     public ApiResponse<NoticeDto> get(@PathVariable Long id) {
-        return ApiResponse.success(noticeServiceImpl.getNotice(id), 200);
+        return ApiResponse.success(noticeService.getNotice(id), 200);
     }
 
     // 공지 전체 조회 (페이징) 및 키워드 조회 (제목/내용/작성자)
@@ -48,8 +48,8 @@ public class NoticeController {
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("id").descending()));
         Page<NoticeDto> result = (searchType != null && text != null && !text.isBlank())
-                ? noticeServiceImpl.searchNotices(searchType, text, pageable)
-                : noticeServiceImpl.getAllNotices(pageable);
+                ? noticeService.searchNotices(searchType, text, pageable)
+                : noticeService.getAllNotices(pageable);
 
         return ApiResponse.success(result, 200);
     }
@@ -68,25 +68,25 @@ public class NoticeController {
             type = Type.ALL_TYPE;
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("id").descending()));
-        return ApiResponse.success(noticeServiceImpl.searchByTargetRangeAndType(targetRange, type, pageable), 200);
+        return ApiResponse.success(noticeService.searchByTargetRangeAndType(targetRange, type, pageable), 200);
     }
 
     // 공지 수정(PATCH)
     @PatchMapping("/{id}")
     public ApiResponse<NoticeDto> patchUpdate(@PathVariable Long id, @RequestBody NoticeWriteDto dto, Authentication authentication) {
-        return ApiResponse.success(noticeServiceImpl.updateNoticePartial(id, dto, authentication), 200);
+        return ApiResponse.success(noticeService.updateNoticePartial(id, dto, authentication), 200);
     }
 
     // 공지 수정(PUT)
     @PutMapping("/{id}")
     public ApiResponse<NoticeDto> update(@PathVariable Long id, @RequestBody NoticeWriteDto dto, Authentication authentication) {
-        return ApiResponse.success(noticeServiceImpl.updateNotice(id, dto, authentication), 200);
+        return ApiResponse.success(noticeService.updateNotice(id, dto, authentication), 200);
     }
 
         // 공지 삭제
         @DeleteMapping("/{id}")
         public ApiResponse<Void> delete (@PathVariable Long id, Authentication authentication){
-            noticeServiceImpl.deleteNotice(id, authentication);
+            noticeService.deleteNotice(id, authentication);
             return ApiResponse.success(null, 200); // 또는 message 담아도 됨
         }
     }

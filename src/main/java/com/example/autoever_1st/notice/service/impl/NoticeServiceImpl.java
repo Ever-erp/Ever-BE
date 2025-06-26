@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +76,12 @@ public class NoticeServiceImpl implements NoticeService {
     // 특정 연도+월 공지 조회 메서드
     @Override @Transactional(readOnly = true)
     public List<NoticeDto> getNoticesByYearAndMonth(int year, int month) {
-        return noticeJdbcDao.findNoticesByYearAndMonth(year, month);
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        List<Notice> notices = noticeRepository.findByTargetDateIsNotNullAndTargetDateBetweenOrderByIsPinnedDescRegistedAtDesc(startDate, endDate);
+        return notices.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     // 공지 유형 (공개범위/구분)으로 조회(AND, OR)
@@ -164,7 +170,9 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new IllegalArgumentException("Notice not found: " + id));
         String memberEmail = authentication.getName();
         Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberEmail));}
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberEmail));
+        noticeRepository.delete(notice);
+    }
 //        if (member.getPosition().getRole().equals( "(* 해당하는 role 값의 문자열 *)" )) {
 //                throw new SecurityException("관리자만 공지를 작성할 수 있습니다.");
 //            }
