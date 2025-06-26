@@ -7,6 +7,7 @@ import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.DataNotFoundException;
 import com.example.autoever_1st.survey.dto.SurveySubmitDto;
 import com.example.autoever_1st.survey.dto.req.SurveyCreateDto;
+import com.example.autoever_1st.survey.dto.req.SurveyDeleteDto;
 import com.example.autoever_1st.survey.dto.req.SurveyUpdateDto;
 import com.example.autoever_1st.survey.dto.res.SurveyResDto;
 import com.example.autoever_1st.survey.entities.Survey;
@@ -59,4 +60,27 @@ public class SurveyController {
         surveyService.updateSurvey(email, surveyId, surveyUpdateDto);
         return ApiResponse.success(null, HttpStatus.OK.value());
     }
+
+    @PatchMapping("/{surveyId}/submit")
+    public ApiResponse<Void> updateSurveyAnswer (@PathVariable String surveyId, @RequestBody SurveySubmitDto surveySubmitDto,
+                                                 Authentication authentication) {
+        String email = authentication.getName();
+        surveyService.updateSurveyAnswer(email, surveyId, surveySubmitDto);
+        return ApiResponse.success(null, HttpStatus.OK.value());
+    }
+
+    @DeleteMapping("/{surveyId}")
+    public ApiResponse<Void> deleteSurvey(@PathVariable String surveyId, Authentication authentication) {
+        String email = authentication.getName();
+        surveyService.deleteSurvey(email, surveyId);
+        return ApiResponse.success(null, HttpStatus.OK.value());
+    }
+
+    @DeleteMapping("/multiple")
+    public ApiResponse<Void> deleteSurveys(@RequestBody SurveyDeleteDto surveyDeleteDto, Authentication authentication) {
+        String email = authentication.getName();
+        surveyService.deleteSurveys(surveyDeleteDto.getSurveyIds(), email);
+        return ApiResponse.success(null, HttpStatus.OK.value());
+    }
+
 }

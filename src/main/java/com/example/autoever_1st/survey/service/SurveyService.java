@@ -5,8 +5,9 @@ import com.example.autoever_1st.survey.dto.req.SurveyCreateDto;
 import com.example.autoever_1st.survey.dto.req.SurveyUpdateDto;
 import com.example.autoever_1st.survey.dto.res.SurveyResDto;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+
+import java.util.List;
 
 public interface SurveyService {
     SurveyResDto getSurvey(String uuid, Authentication authentication);
@@ -14,4 +15,7 @@ public interface SurveyService {
     void createSurvey(SurveyCreateDto surveyCreateDto);
     void submitSurvey(String email, String surveyId, SurveySubmitDto surveySubmitDto);
     void updateSurvey(String email, String surveyId, SurveyUpdateDto surveyUpdateDto);
+    void updateSurveyAnswer(String email, String surveyId, SurveySubmitDto surveySubmitDto);
+    void deleteSurvey(String email, String surveyId);
+    void deleteSurveys(List<String> surveyIds, String email);
 }

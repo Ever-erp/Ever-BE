@@ -182,4 +182,67 @@ public class SurveyServiceImpl implements SurveyService {
                 metaStr
         );
     }
+
+    @Transactional
+    @Override
+    public void updateSurveyAnswer(String email, String surveyId, SurveySubmitDto surveySubmitDto) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+        Survey survey = surveyRepository.findByUuid(surveyId)
+                .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+        if (survey.getDueDate().isBefore(LocalDate.now())) {
+            throw new ValidationException("이미 마감된 설문은 수정할 수 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+
+        MemberSurvey memberSurvey = memberSurveyRepository.findBySurveyAndMember(survey, member)
+                .orElseThrow(() -> new DataNotFoundException("해당 설문에 대한 응답이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        String answerStr;
+        try {
+            answerStr = objectMapper.writeValueAsString(surveySubmitDto.getAnswerList());
+        } catch (JsonProcessingException e) {
+            throw new ValidationException("응답을 문자열로 변환하는 데 실패했습니다.", CustomStatus.INVALID_INPUT);
+        }
+
+        memberSurvey.setAnswer(answerStr);
+    }
+
+    @Transactional
+    @Override
+    public void deleteSurvey(String email, String surveyId) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        String role = member.getPosition().getRole();
+        if (!"관리자".equals(role)) {
+            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+
+        Survey survey = surveyRepository.findByUuid(surveyId)
+                .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
+        // 응답 먼저 삭제
+        memberSurveyRepository.deleteBySurvey(survey);
+        // 설문 삭제
+        surveyRepository.delete(survey);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSurveys(List<String> surveyIds, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+
+        String role = member.getPosition().getRole();
+        if (!"관리자".equals(role)) {
+            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
+        }
+
+        for (String surveyId : surveyIds) {
+            Survey survey = surveyRepository.findByUuid(surveyId)
+                    .orElseThrow(() -> new DataNotFoundException("설문을 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
+            // 응답 먼저 삭제
+            memberSurveyRepository.deleteBySurvey(survey);
+            surveyRepository.delete(survey);
+        }
+    }
 }
