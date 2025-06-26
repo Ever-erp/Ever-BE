@@ -24,7 +24,7 @@ public class SurveyResDto {
     private String surveyTitle;
     private String surveyDesc;
     private String status;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
     private LocalDate dueDate;
     private Integer surveySize;
     private List<String> surveyQuestion;
@@ -45,7 +45,7 @@ public class SurveyResDto {
                 .surveyTitle(survey.getTitle())
                 .surveyDesc(survey.getDescription())
                 .status(survey.getStatus())
-                .createdAt(survey.getRegistedAt())
+                .createdAt(survey.getRegistedAt().toLocalDate())
                 .dueDate(survey.getDueDate())
                 .surveySize(questions.size())
                 .surveyQuestion(questions)
