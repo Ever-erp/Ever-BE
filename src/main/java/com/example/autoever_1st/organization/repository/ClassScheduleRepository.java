@@ -19,6 +19,10 @@ public interface ClassScheduleRepository extends JpaRepository<ClassSchedule, Lo
     // 수업 내용으로 검색
     List<ClassSchedule> findByClassDescContaining(String classDesc);
 
-    List<ClassSchedule> findByTargetDateIsNotNullAndTargetDateBetweenOrderByIsPinnedDescRegistedAtDesc(
-            LocalDate startDate, LocalDate endDate);
+//  * (ClassSchedule.endDate >= :startDate)  AND  (ClassSchedule.startDate <= :endDate)
+//  * ClassSchedule와 특정 연월(1일~말일), 두 구간이 하나라도 겹치면 매칭
+    List<ClassSchedule> findByEndDateGreaterThanEqualAndStartDateLessThanEqual(
+            LocalDate startDate,
+            LocalDate endDate
+    );
 }

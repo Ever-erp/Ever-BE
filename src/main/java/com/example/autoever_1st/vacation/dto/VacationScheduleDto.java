@@ -1,0 +1,21 @@
+package com.example.autoever_1st.vacation.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class VacationScheduleDto {
+    private Long id;                  // 엔티티 PK
+    private LocalDate vacationDate;
+    private String vacationType;
+    private String vacationDesc;
+
+    @JsonProperty("memberId")
+    private Long memberId;            // 연관 멤버 PK
+}

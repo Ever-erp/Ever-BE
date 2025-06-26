@@ -95,7 +95,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     public List<ClassScheduleResDto> getNoticesByYearAndMonth(int year, int month) {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        List<ClassSchedule> classSchedules = classScheduleRepository.findByTargetDateIsNotNullAndTargetDateBetweenOrderByIsPinnedDescRegistedAtDesc(startDate, endDate);
+        List<ClassSchedule> classSchedules = classScheduleRepository.findByEndDateGreaterThanEqualAndStartDateLessThanEqual(startDate, endDate);
         return classSchedules.stream()
                 .map(ClassScheduleServiceImpl::toDto)
                 .collect(Collectors.toList());
