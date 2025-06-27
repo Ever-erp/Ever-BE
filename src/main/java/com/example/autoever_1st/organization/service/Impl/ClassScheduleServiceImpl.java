@@ -1,6 +1,8 @@
 package com.example.autoever_1st.organization.service.Impl;
 
 import com.example.autoever_1st.auth.repository.MemberRepository;
+import com.example.autoever_1st.common.exception.CustomStatus;
+import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
 import com.example.autoever_1st.organization.dto.req.ClassScheduleWriteDto;
 import com.example.autoever_1st.organization.dto.res.ClassScheduleResDto;
 import com.example.autoever_1st.organization.entities.ClassSchedule;
@@ -24,6 +26,12 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     // 수업 생성
     @Transactional @Override
     public ClassScheduleResDto createClassSchedule(ClassScheduleWriteDto classScheduleWriteDto) {
+        // 수업 날짜 중복 방지
+        Long overlapCount = classScheduleRepository.countOverlappingSchedules(classScheduleWriteDto.getClassId(),
+                classScheduleWriteDto.getStartDate(), classScheduleWriteDto.getEndDate());
+        if (overlapCount> 0) {
+            throw new ValidationException("수업일정이 중복되었습니다.", CustomStatus.INVALID_INPUT);
+        }
         ClassSchedule classSchedule = classScheduleRepository.save(toEntity(classScheduleWriteDto));
         log.info("새 수업 작성");
         return toDto(classSchedule); // 생성된 객체만 반환

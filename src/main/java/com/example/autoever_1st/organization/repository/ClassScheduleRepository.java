@@ -22,4 +22,9 @@ public interface ClassScheduleRepository extends JpaRepository<ClassSchedule, Lo
             "WHERE cs.classEntity.id = :classId " + "AND cs.startDate <= :endDate " + "AND cs.endDate >= :startDate")
     List<ClassSchedule> findByClassAndExactMonth(@Param("classId") Long classId, @Param("startDate") LocalDate startDate,
                                                  @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT COUNT(cs) FROM ClassSchedule cs " +
+            "WHERE cs.classEntity.id = :classId " + "AND cs.startDate <= :endDate " + "AND cs.endDate >= :startDate")
+    Long countOverlappingSchedules(@Param("classId") Long classId, @Param("startDate") LocalDate startDate,
+                                                 @Param("endDate") LocalDate endDate);
 }

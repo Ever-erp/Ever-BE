@@ -15,4 +15,5 @@ public class ClassScheduleWriteDto {
     private LocalDate endDate;
     private String classDesc;
     private String classUrl;
+    private Long classId;
 }
