@@ -10,4 +10,5 @@ import java.util.List;
 public class SurveyWithMembersResDto {
     private SurveyResDto survey;
     private List<MemberAnswerDto> members;
+    private List<NotAnsweredMemberDto> notAnsweredMembers;
 }

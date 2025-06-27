@@ -32,7 +32,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     // 수업(ID)으로 수업 일정 조회
     @Transactional @Override
     public ClassScheduleResDto findById(Long id) {
-        ClassSchedule classSchedule = classScheduleRepository.findDtoById(id);
+        ClassSchedule classSchedule = classScheduleRepository.findById(id).get();
         log.info("수업 ID로 수업 일정 조회: {}",id);
         return ClassScheduleServiceImpl.toDto(classSchedule);
     }
@@ -73,7 +73,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     // 공지 전체 수정
     @Override @Transactional
     public ClassScheduleResDto updateClassSchedule(Long id, ClassScheduleWriteDto classScheduleWriteDto) {
-        ClassSchedule classSchedule = classScheduleRepository.findDtoById(id);
+        ClassSchedule classSchedule = classScheduleRepository.findById(id).get();
 
         classSchedule.setSubjectName(classScheduleWriteDto.getSubjectName());
         classSchedule.setStartDate(classScheduleWriteDto.getStartDate());
@@ -87,7 +87,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     // 수업 삭제
     @Override @Transactional
     public void deleteClassSchedule(Long id) {
-        ClassSchedule classSchedule = classScheduleRepository.findDtoById(id);
+        ClassSchedule classSchedule = classScheduleRepository.findById(id).get();
         classScheduleRepository.delete(classSchedule);
     }
 

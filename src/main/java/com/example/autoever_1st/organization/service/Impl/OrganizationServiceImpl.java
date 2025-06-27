@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,27 +42,31 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     public OrgInitResDto getOrganizationInitData() {
-        List<ClassWithScheduleDto> classes = classEntityRepository.findAll().stream()
-                .map(classEntity -> {
-                    List<ClassScheduleDto> schedules = classScheduleRepository.findByClassEntityId(classEntity.getId())
-                            .stream()
-                            .map(schedule -> new ClassScheduleDto(
-                                    schedule.getId(),
-                                    schedule.getSubjectName(),
-                                    schedule.getStartDate(),
-                                    schedule.getEndDate(),
-                                    schedule.getClassDesc(),
-                                    schedule.getClassUrl()
-                            ))
-                            .toList();
-
-                    return new ClassWithScheduleDto(
-                            classEntity.getId(),
-                            classEntity.getName(),
-                            classEntity.getCohort(),
-                            schedules
-                    );
-                }).toList();
+        // 반 전체 조회
+        List<ClassEntity> classEntities = classEntityRepository.findAll();
+        // 모든 스케줄 + 소속 반 join fetch
+        List<ClassSchedule> allSchedules = classScheduleRepository.findAllWithClassEntity();
+        // 반 id로 스케줄 그룹핑
+        Map<Long, List<ClassScheduleDto>> classIdToSchedules = allSchedules.stream().collect(Collectors.groupingBy(
+                        cs -> cs.getClassEntity().getId(),
+                        Collectors.mapping(cs -> new ClassScheduleDto(
+                                cs.getId(),
+                                cs.getSubjectName(),
+                                cs.getStartDate(),
+                                cs.getEndDate(),
+                                cs.getClassDesc(),
+                                cs.getClassUrl()
+                        ), Collectors.toList())
+                ));
+        // ClassWithScheduleDto로 변환
+        List<ClassWithScheduleDto> classes = classEntities.stream()
+                .map(classEntity -> new ClassWithScheduleDto(
+                        classEntity.getId(),
+                        classEntity.getName(),
+                        classEntity.getCohort(),
+                        classIdToSchedules.getOrDefault(classEntity.getId(), List.of())
+                ))
+                .toList();
 
         // 강사 포지션 가져오기
         Position instructorPosition = positionRepository.findByRole("강사")
@@ -92,7 +97,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .map(s -> new ClassScheduleDto(s.getId(), s.getSubjectName(), s.getStartDate(), s.getEndDate(), s.getClassDesc(), s.getClassUrl()))
                 .toList();
         // 해당 반의 멤버들
-        List<Member> members = memberRepository.findByClassEntity(classEntity);
+        List<Member> members = memberRepository.findByClassEntityWithPosition(classEntity);
 
         for (Member member:members) {
             member.getPosition();

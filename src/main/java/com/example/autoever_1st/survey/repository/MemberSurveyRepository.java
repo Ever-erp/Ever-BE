@@ -16,5 +16,10 @@ public interface MemberSurveyRepository extends JpaRepository<MemberSurvey, Long
     Optional<MemberSurvey> findBySurveyAndMember(Survey survey, Member member);
     boolean existsBySurveyAndMember(Survey survey, Member member);
     void deleteBySurvey(Survey survey);
-    List<MemberSurvey> findBySurvey(Survey survey);
+    @Query("SELECT ms FROM MemberSurvey ms JOIN FETCH ms.member WHERE ms.survey = :survey")
+    List<MemberSurvey> findBySurveyWithMember(@Param("survey") Survey survey);
+
+    @Query("select ms.member.email from MemberSurvey ms where ms.survey = :survey")
+    List<String> findEmailsBySurvey(@Param("survey") Survey survey);
+    int countBySurvey(Survey survey);
 }
