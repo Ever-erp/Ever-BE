@@ -5,7 +5,9 @@ import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
 import com.example.autoever_1st.organization.dto.req.ClassScheduleWriteDto;
 import com.example.autoever_1st.organization.dto.res.ClassScheduleResDto;
+import com.example.autoever_1st.organization.entities.ClassEntity;
 import com.example.autoever_1st.organization.entities.ClassSchedule;
+import com.example.autoever_1st.organization.repository.ClassEntityRepository;
 import com.example.autoever_1st.organization.repository.ClassScheduleRepository;
 import com.example.autoever_1st.organization.service.ClassScheduleService;
 import jakarta.transaction.Transactional;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class ClassScheduleServiceImpl implements ClassScheduleService {
     private final MemberRepository memberRepository;
     private final ClassScheduleRepository classScheduleRepository;
+    private final ClassEntityRepository classEntityRepository;
 
     // 수업 생성
     @Transactional @Override
@@ -32,7 +35,8 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
         if (overlapCount> 0) {
             throw new ValidationException("수업일정이 중복되었습니다.", CustomStatus.INVALID_INPUT);
         }
-        ClassSchedule classSchedule = classScheduleRepository.save(toEntity(classScheduleWriteDto));
+        ClassEntity classEntity = classEntityRepository.findById(classScheduleWriteDto.getClassId()).get();
+        ClassSchedule classSchedule = classScheduleRepository.save(toEntity(classScheduleWriteDto, classEntity));
         log.info("새 수업 작성");
         return toDto(classSchedule); // 생성된 객체만 반환
     }
@@ -110,13 +114,14 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
                 .build();
     }
 
-    public static ClassSchedule toEntity(ClassScheduleWriteDto classScheduleWriteDto) {
+    public static ClassSchedule toEntity(ClassScheduleWriteDto classScheduleWriteDto, ClassEntity classEntity) {
         return ClassSchedule.builder()
                 .subjectName(classScheduleWriteDto.getSubjectName())
                 .startDate(classScheduleWriteDto.getStartDate())
                 .endDate(classScheduleWriteDto.getEndDate())
                 .classDesc(classScheduleWriteDto.getClassDesc())
                 .classUrl(classScheduleWriteDto.getClassUrl())
+                .classEntity(classEntity)
                 .build();
     }
 }
