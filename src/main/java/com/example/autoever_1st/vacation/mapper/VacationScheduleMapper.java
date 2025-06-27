@@ -28,7 +28,7 @@ public class VacationScheduleMapper {
                 .vacationDate(vacationSchedule.getVacationDate())
                 .vacationType(vacationSchedule.getVacationType())
                 .vacationDesc(vacationSchedule.getVacationDesc())
-                .memberId(vacationSchedule.getMember().getId())
+                .memberName(vacationSchedule.getMember().getName())
                 .build();
     }
 

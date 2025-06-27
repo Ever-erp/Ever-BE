@@ -37,7 +37,7 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
         VacationSchedule saved =  vacationScheduleRepository.save(entity);
         log.info("새 휴가 작성");
         VacationScheduleDto vacationScheduleDto = vacationScheduleMapper.toDto(saved,authentication);
-        log.info("member_id : {}", vacationScheduleDto.getMemberId());
+        log.info("member_id : {}", vacationScheduleDto.getMemberName());
         try {
             log.info("RETURN DTO: {}", new ObjectMapper().writeValueAsString(vacationScheduleDto));
         } catch (JsonProcessingException e) {
@@ -57,14 +57,15 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     }
 
     // 휴가 조회 (전체)
-    @Override
+//    @Override
     @Transactional
-    public List<VacationScheduleDto> findAll() {
+    public List<VacationScheduleDto> findAll(Authentication authentication) {
         log.info("휴가 전체 조회");
-        return vacationScheduleRepository.findAll()
-                .stream()
-                .map(VacationScheduleServiceImpl::toDto)
-                .collect(Collectors.toList());
+        List<VacationSchedule> vacationSchedules = vacationScheduleRepository.findAll();
+        List<VacationScheduleDto> dtos;
+        return vacationScheduleRepository.findAll().stream()
+                .map(vc -> vacationScheduleMapper.toDto(vc, authentication))
+                .toList();
     }
 
     // 휴가 수정 (PUT)

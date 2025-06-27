@@ -11,7 +11,7 @@ public interface VacationScheduleService {
 
         VacationScheduleDto findById(Long id);
 
-        List<VacationScheduleDto> findAll();
+        List<VacationScheduleDto> findAll(Authentication authentication);
 
         VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto);
 

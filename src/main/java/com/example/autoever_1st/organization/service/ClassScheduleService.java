@@ -2,6 +2,7 @@ package com.example.autoever_1st.organization.service;
 
 import com.example.autoever_1st.organization.dto.req.ClassScheduleWriteDto;
 import com.example.autoever_1st.organization.dto.res.ClassScheduleResDto;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -28,5 +29,5 @@ public interface ClassScheduleService {
     List<ClassScheduleResDto> findByClassDesc(String classDesc);
 
     // 연/월로 해당하는 공지 전체 조회 (캘린더용)
-    List<ClassScheduleResDto> getNoticesByYearAndMonth(int year, int month);
+    List<ClassScheduleResDto> getNoticesByYearAndMonth(int year, int month, Authentication authentication);
 }

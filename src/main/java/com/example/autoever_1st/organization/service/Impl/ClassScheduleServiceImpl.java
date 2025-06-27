@@ -1,13 +1,17 @@
 package com.example.autoever_1st.organization.service.Impl;
 
+import com.example.autoever_1st.auth.entities.Member;
+import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.organization.dto.req.ClassScheduleWriteDto;
 import com.example.autoever_1st.organization.dto.res.ClassScheduleResDto;
+import com.example.autoever_1st.organization.entities.ClassEntity;
 import com.example.autoever_1st.organization.entities.ClassSchedule;
 import com.example.autoever_1st.organization.repository.ClassScheduleRepository;
 import com.example.autoever_1st.organization.service.ClassScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ClassScheduleServiceImpl implements ClassScheduleService {
-
+    private final MemberRepository memberRepository;
     private final ClassScheduleRepository classScheduleRepository;
 
     // 수업 생성
@@ -92,10 +96,17 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     @Transactional
     @Override
-    public List<ClassScheduleResDto> getNoticesByYearAndMonth(int year, int month) {
+    public List<ClassScheduleResDto> getNoticesByYearAndMonth(int year, int month, Authentication authentication) {
+        // 로그인한 유저 이메일
+        String email = authentication.getName();
+        // 유저 조회
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        List<ClassSchedule> classSchedules = classScheduleRepository.findByEndDateGreaterThanEqualAndStartDateLessThanEqual(startDate, endDate);
+        ClassEntity classEntity = member.getClassEntity();
+        List<ClassSchedule> classSchedules = classScheduleRepository.findByClassEntityAndEndDateGreaterThanEqualAndStartDateLessThanEqual(classEntity, startDate, endDate);
         return classSchedules.stream()
                 .map(ClassScheduleServiceImpl::toDto)
                 .collect(Collectors.toList());

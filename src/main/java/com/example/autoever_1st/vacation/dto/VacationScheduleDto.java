@@ -16,6 +16,6 @@ public class VacationScheduleDto {
     private String vacationType;
     private String vacationDesc;
 
-    @JsonProperty("memberId")
-    private Long memberId;            // 연관 멤버 PK
+    @JsonProperty("memberName")
+    private String memberName;
 }
