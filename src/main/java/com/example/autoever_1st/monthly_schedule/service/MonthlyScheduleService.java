@@ -19,7 +19,7 @@ public class MonthlyScheduleService {
     public MonthlyScheduleDto getMonthlySchedule(int year, int month, Authentication authentication) {
         return MonthlyScheduleDto.builder()
                 .notices(noticeService.getNoticesByYearAndMonth(year, month))
-                .vacations(vacationScheduleService.getNoticesByYearAndMonth(year, month))
+                .vacations(vacationScheduleService.getNoticesByYearAndMonth(year, month, authentication))
                 .classes(classScheduleService.getNoticesByYearAndMonth(year, month, authentication))
                 .build();
     }

@@ -29,7 +29,7 @@ public class ClassScheduleController {
 //    전체 수업 스케줄 조회
 //    * GET /api/class-schedules
     @GetMapping
-    public ApiResponse<List<ClassScheduleResDto>> getAllClassSchedules() {
+    public ApiResponse<List<ClassScheduleResDto>> getAllClassSchedules(@RequestParam int year, @RequestParam int month) {
         log.info("전체 수업 스케줄 조회 요청");
         List<ClassScheduleResDto> classSchedules = classScheduleService.findAll();
         return ApiResponse.success(classSchedules, HttpStatus.OK.value());

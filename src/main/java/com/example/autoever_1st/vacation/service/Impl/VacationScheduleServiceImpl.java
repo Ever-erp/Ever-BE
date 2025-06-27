@@ -1,6 +1,7 @@
 package com.example.autoever_1st.vacation.service.Impl;
 
 
+import com.example.autoever_1st.auth.entities.Member;
 import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.vacation.dto.VacationScheduleDto;
 import com.example.autoever_1st.vacation.dto.VacationScheduleWriteDto;
@@ -88,13 +89,12 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     // 연/월로 검색
     @Transactional
     @Override
-    public List<VacationScheduleDto> getNoticesByYearAndMonth(int year, int month) {
+    public List<VacationScheduleDto> getNoticesByYearAndMonth(int year, int month,Authentication authentication) {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        List<VacationSchedule> vacationSchedules = vacationScheduleRepository.findByVacationDateIsNotNullAndVacationDateBetween(startDate, endDate);
-        return vacationSchedules.stream()
-                .map(VacationScheduleServiceImpl::toDto)
-                .collect(Collectors.toList());
+        return vacationScheduleRepository.findByVacationDateIsNotNullAndVacationDateBetween(startDate, endDate).stream()
+                .map(vc -> vacationScheduleMapper.toDto(vc, authentication))
+                .toList();
     }
 
     public static VacationScheduleDto toDto(VacationSchedule vacationSchedule) {

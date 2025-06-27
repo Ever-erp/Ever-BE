@@ -44,6 +44,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     // 전체 수업 일정 조회
     @Transactional  @Override
     public List<ClassScheduleResDto> findAll() {
+
         log.info("전체 수업 일정 조회");
         return classScheduleRepository.findAll()
                 .stream()
