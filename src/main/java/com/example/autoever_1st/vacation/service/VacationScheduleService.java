@@ -16,8 +16,5 @@ public interface VacationScheduleService {
         VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto);
 
         void deleteVacationSchedule(Long id);
-
-        // 연/월로 해당하는 공지 전체 조회 (캘린더용)
-        List<VacationScheduleDto> getNoticesByYearAndMonth(int year, int month, Authentication authentication);
     }
 

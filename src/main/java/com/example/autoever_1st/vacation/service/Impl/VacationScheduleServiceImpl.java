@@ -17,9 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +32,13 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     @Override
     @Transactional
     public VacationScheduleDto createVacationSchedule(VacationScheduleWriteDto vacationScheduleWriteDto,Authentication authentication) {
-        VacationSchedule entity = vacationScheduleMapper.toEntity(vacationScheduleWriteDto, authentication);
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("not found"));
+        VacationSchedule entity = vacationScheduleMapper.toEntity(vacationScheduleWriteDto, member);
         VacationSchedule saved =  vacationScheduleRepository.save(entity);
         log.info("새 휴가 작성");
-        VacationScheduleDto vacationScheduleDto = vacationScheduleMapper.toDto(saved,authentication);
+        VacationScheduleDto vacationScheduleDto = vacationScheduleMapper.toDto(saved,member);
         log.info("member_id : {}", vacationScheduleDto.getMemberName());
         try {
             log.info("RETURN DTO: {}", new ObjectMapper().writeValueAsString(vacationScheduleDto));
@@ -52,7 +53,7 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     @Override
     @Transactional
     public VacationScheduleDto findById(Long id){
-        VacationSchedule vacationSchedule = vacationScheduleRepository.findDtoById(id);
+        VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
         log.info("휴가 ID로 단건 조회: {}", id);
         return VacationScheduleServiceImpl.toDto(vacationSchedule);
     }
@@ -61,18 +62,21 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
 //    @Override
     @Transactional
     public List<VacationScheduleDto> findAll(Authentication authentication) {
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("not found"));
         log.info("휴가 전체 조회");
         List<VacationSchedule> vacationSchedules = vacationScheduleRepository.findAll();
         List<VacationScheduleDto> dtos;
         return vacationScheduleRepository.findAll().stream()
-                .map(vc -> vacationScheduleMapper.toDto(vc, authentication))
+                .map(vc -> vacationScheduleMapper.toDto(vc, member))
                 .toList();
     }
 
     // 휴가 수정 (PUT)
     @Override @Transactional
     public VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto) {
-        VacationSchedule vacationSchedule = vacationScheduleRepository.findDtoById(id);
+        VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
         vacationSchedule.setVacationDate(vacationScheduleWriteDto.getVacationDate());
         vacationSchedule.setVacationType(vacationScheduleWriteDto.getVacationType());
         vacationSchedule.setVacationDesc(vacationScheduleWriteDto.getVacationDesc());
@@ -82,19 +86,8 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     // 수업 삭제
     @Override @Transactional
     public void deleteVacationSchedule(Long id) {
-        VacationSchedule vacationSchedule = vacationScheduleRepository.findDtoById(id);
+        VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
         vacationScheduleRepository.delete(vacationSchedule);
-    }
-
-    // 연/월로 검색
-    @Transactional
-    @Override
-    public List<VacationScheduleDto> getNoticesByYearAndMonth(int year, int month,Authentication authentication) {
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        return vacationScheduleRepository.findByVacationDateIsNotNullAndVacationDateBetween(startDate, endDate).stream()
-                .map(vc -> vacationScheduleMapper.toDto(vc, authentication))
-                .toList();
     }
 
     public static VacationScheduleDto toDto(VacationSchedule vacationSchedule) {

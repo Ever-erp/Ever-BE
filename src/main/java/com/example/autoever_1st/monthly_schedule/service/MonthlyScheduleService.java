@@ -1,26 +1,16 @@
 package com.example.autoever_1st.monthly_schedule.service;
 
-import com.example.autoever_1st.monthly_schedule.dto.MonthlyScheduleDto;
-import com.example.autoever_1st.notice.service.NoticeService;
-import com.example.autoever_1st.organization.service.ClassScheduleService;
-import com.example.autoever_1st.vacation.service.VacationScheduleService;
-import lombok.RequiredArgsConstructor;
+import com.example.autoever_1st.notice.dto.res.NoticeDto;
+import com.example.autoever_1st.organization.dto.res.ClassScheduleResDto;
+import com.example.autoever_1st.vacation.dto.VacationScheduleDto;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-public class MonthlyScheduleService {
+import java.util.List;
 
-    private final NoticeService noticeService;
-    private final VacationScheduleService vacationScheduleService;
-    private final ClassScheduleService classScheduleService;
+public interface MonthlyScheduleService {
 
-    public MonthlyScheduleDto getMonthlySchedule(int year, int month, Authentication authentication) {
-        return MonthlyScheduleDto.builder()
-                .notices(noticeService.getNoticesByYearAndMonth(year, month))
-                .vacations(vacationScheduleService.getNoticesByYearAndMonth(year, month, authentication))
-                .classes(classScheduleService.getNoticesByYearAndMonth(year, month, authentication))
-                .build();
-    }
+    List<NoticeDto> getNoticesByYearAndMonth(int year, int month, Authentication authentication);
+    List<VacationScheduleDto> getVacationsByYearAndMonth(int year, int month, Authentication authentication);
+    List<ClassScheduleResDto> getClassesByYearAndMonth(int year, int month, Authentication authentication);
+
 }
