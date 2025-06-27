@@ -76,7 +76,7 @@ public class NoticeController {
 
     // 특정 연도/월의 공지사항 조회
     // 예: GET /api/notices?year=2025&month=6
-    @GetMapping
+    @GetMapping("/date")
     public ApiResponse<List<NoticeDto>> getNoticesByYearAndMonth(
             @RequestParam int year,
             @RequestParam int month) {
