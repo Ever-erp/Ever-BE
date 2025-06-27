@@ -350,12 +350,12 @@ public class SurveyServiceImpl implements SurveyService {
         String className = classEntity != null ? classEntity.getName() : "전체";
 
         // 설문에 응답한 멤버 Map <member_id, MemberSurvey>
-        List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurvey(survey);
+        List<MemberSurvey> memberSurveys = memberSurveyRepository.findBySurveyWithMember(survey);
         Map<Long, MemberSurvey> answeredMap = memberSurveys.stream().collect(Collectors.toMap(
                         ms -> ms.getMember().getId(),
                         ms -> ms));
         // 반 전체 멤버
-        List<Member> targetMembers = classEntity == null ? memberRepository.findAll() : memberRepository.findByClassEntity(classEntity);
+        List<Member> targetMembers = classEntity == null ? memberRepository.findAllWithPosition() : memberRepository.findByClassEntityWithPosition(classEntity);
         // 응답한 멤버
         List<MemberAnswerDto> answeredMembers = targetMembers.stream().filter(m -> answeredMap.containsKey(m.getId()))
                 .map(m -> {

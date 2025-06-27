@@ -97,7 +97,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .map(s -> new ClassScheduleDto(s.getId(), s.getSubjectName(), s.getStartDate(), s.getEndDate(), s.getClassDesc(), s.getClassUrl()))
                 .toList();
         // 해당 반의 멤버들
-        List<Member> members = memberRepository.findByClassEntity(classEntity);
+        List<Member> members = memberRepository.findByClassEntityWithPosition(classEntity);
 
         for (Member member:members) {
             member.getPosition();

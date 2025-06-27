@@ -16,8 +16,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m JOIN FETCH m.position WHERE m.email = :email")
     Optional<Member> findByEmailWithPosition(@Param("email") String email);
     List<Member> findByPosition(Position position);
-    List<Member> findByClassEntity(ClassEntity classEntity);
+    @Query("SELECT m FROM Member m JOIN FETCH m.position WHERE m.classEntity = :classEntity")
+    List<Member> findByClassEntityWithPosition(@Param("classEntity") ClassEntity classEntity);
     List<Member> findByNameContaining(String name);
     List<Member> findByClassEntityIdAndNameContaining(Long classId, String name);
     int countByClassEntity(ClassEntity classEntity);
+    @Query("SELECT m FROM Member m JOIN FETCH m.position")
+    List<Member> findAllWithPosition();
 }
