@@ -12,8 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/notices")
@@ -70,6 +73,19 @@ public class NoticeController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("isPinned").descending().and(Sort.by("id").descending()));
         return ApiResponse.success(noticeService.searchByTargetRangeAndType(targetRange, type, pageable), 200);
     }
+
+    // 특정 연도/월의 공지사항 조회
+    // 예: GET /api/notices?year=2025&month=6
+    @GetMapping
+    public ApiResponse<List<NoticeDto>> getNoticesByYearAndMonth(
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        List<NoticeDto> notices = noticeService.getNoticesByYearAndMonth(year, month);
+        return ApiResponse.success(notices, HttpStatus.OK.value());
+    }
+
+
 
     // 공지 수정(PATCH)
     @PatchMapping("/{id}")
