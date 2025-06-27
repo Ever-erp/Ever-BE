@@ -98,12 +98,4 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
                 .vacationDesc(vacationSchedule.getVacationDesc())
                 .build();
     }
-
-//    public static VacationSchedule toEntity(VacationScheduleWriteDto vacationScheduleWriteDto) {
-//        return VacationSchedule.builder()
-//                .vacationDate(vacationScheduleWriteDto.getVacationDate())
-//                .vacationType(vacationScheduleWriteDto.getVacationType())
-//                .vacationDesc(vacationScheduleWriteDto.getVacationDesc())
-//                .build();
-//    }
 }
