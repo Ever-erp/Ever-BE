@@ -25,7 +25,7 @@ public class NoticeServiceImpl implements NoticeService {
     private final MemberRepository memberRepository;
 
 
-    // 공지 생성 - NoticeWriteDto와 memberId를 받아 Notice 엔티티 생성 후 저장
+    // 공지 생성
     @Override @Transactional
     public NoticeDto createNotice(NoticeWriteDto dto, Authentication authentication) {
         String memberEmail = authentication.getName();
@@ -38,7 +38,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setTargetRange(dto.getTargetRange());
         notice.setTargetDate(dto.getTargetDate());
         notice.setType(dto.getType());
-        notice.setMember(member); // writer는 @PrePersist에서 자동 설정
+        notice.setMember(member);
 
         return NoticeDto.toDto(noticeRepository.save(notice));
     }
