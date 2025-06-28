@@ -17,9 +17,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notice extends TimeStamp {       // extends TimeStamp (ID 중복 문제)
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
+
+//    id는 TimeStamp 엔티티 상속
 
     @Enumerated(EnumType.STRING)
     private TargetRange targetRange;        // 공개 범위 : 전체/반(웹앱/스마트팩토리/SW임베디드/IT보안/클라우드)

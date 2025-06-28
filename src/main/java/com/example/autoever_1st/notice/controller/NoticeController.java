@@ -7,6 +7,7 @@ import com.example.autoever_1st.notice.constant.Type;
 import com.example.autoever_1st.notice.dto.req.NoticeWriteDto;
 import com.example.autoever_1st.notice.dto.res.NoticeDto;
 import com.example.autoever_1st.notice.service.NoticeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,18 +15,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/notices")
 @RequiredArgsConstructor
+@Validated
 public class NoticeController {
 
     private final NoticeService noticeService;
 
     // 공지 작성
     @PostMapping
-    public ApiResponse<NoticeDto> create(@RequestBody NoticeWriteDto dto, Authentication authentication) {
+    public ApiResponse<NoticeDto> create(@RequestBody @Valid NoticeWriteDto dto, Authentication authentication) {
         return ApiResponse.success(noticeService.createNotice(dto, authentication), HttpStatus.CREATED.value());
     }
 
@@ -74,20 +77,9 @@ public class NoticeController {
         return ApiResponse.success(noticeService.searchByTargetRangeAndType(targetRange, type, pageable,authentication), HttpStatus.OK.value());
     }
 
-    // 특정 연도/월의 공지사항 조회
-//    @GetMapping("/date")
-//    public ApiResponse<List<NoticeDto>> getNoticesByYearAndMonth(
-//            @RequestParam int year,
-//            @RequestParam int month,
-//            Authentication authentication) {
-//
-//        List<NoticeDto> notices = noticeService.getNoticesByYearAndMonth(year, month, authentication);
-//        return ApiResponse.success(notices, HttpStatus.OK.value());
-//    }
-
     // 공지 수정(PUT)
     @PutMapping("/{id}")
-    public ApiResponse<NoticeDto> update(@PathVariable Long id, @RequestBody NoticeWriteDto dto, Authentication authentication) {
+    public ApiResponse<NoticeDto> update(@PathVariable Long id, @RequestBody @Valid NoticeWriteDto dto, Authentication authentication) {
         return ApiResponse.success(noticeService.updateNotice(id, dto, authentication), HttpStatus.OK.value());
     }
 
