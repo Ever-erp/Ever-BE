@@ -55,12 +55,16 @@ public class MonthlyScheduleImpl implements MonthlyScheduleService {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+        ClassEntity classEntity = member.getClassEntity();
+        if (classEntity == null) {
+            throw new IllegalArgumentException("반 정보가 없습니다.");
+        }
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
         List<VacationSchedule> vacationSchedules = vacationScheduleRepository
-                .findByMemberAndVacationDateIsNotNullAndVacationDateBetween(member, startDate, endDate);
+                .findByClassEntityAndVacationDateBetween(classEntity, startDate, endDate);
         return vacationSchedules.stream()
-                .map(vc -> vacationScheduleMapper.toDto(vc, member))
+                .map(vc -> vacationScheduleMapper.toDto(vc, vc.getMember()))
                 .toList();
     }
 

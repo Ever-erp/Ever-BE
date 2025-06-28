@@ -18,4 +18,6 @@ public class VacationScheduleDto {
 
     @JsonProperty("memberName")
     private String memberName;
+
+    private Long memberId;
 }

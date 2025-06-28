@@ -25,6 +25,7 @@ public class VacationScheduleMapper {
                 .vacationType(vacationSchedule.getVacationType())
                 .vacationDesc(vacationSchedule.getVacationDesc())
                 .memberName(member.getName())
+                .memberId(member.getId())
                 .build();
     }
 
