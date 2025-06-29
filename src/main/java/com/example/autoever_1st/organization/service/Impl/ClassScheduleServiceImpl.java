@@ -1,5 +1,6 @@
 package com.example.autoever_1st.organization.service.Impl;
 
+import com.example.autoever_1st.auth.entities.Member;
 import com.example.autoever_1st.auth.repository.MemberRepository;
 import com.example.autoever_1st.common.exception.CustomStatus;
 import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
@@ -13,6 +14,7 @@ import com.example.autoever_1st.organization.service.ClassScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,7 +30,10 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     // 수업 생성
     @Transactional @Override
-    public ClassScheduleResDto createClassSchedule(ClassScheduleWriteDto classScheduleWriteDto) {
+    public ClassScheduleResDto createClassSchedule(ClassScheduleWriteDto classScheduleWriteDto, Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
         // 수업 날짜 중복 방지
         Long overlapCount = classScheduleRepository.countOverlappingSchedules(classScheduleWriteDto.getClassId(),
                 classScheduleWriteDto.getStartDate(), classScheduleWriteDto.getEndDate());
@@ -43,17 +48,23 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     // 수업(ID)으로 수업 일정 조회
     @Transactional @Override
-    public ClassScheduleResDto findById(Long id) {
-        ClassSchedule classSchedule = classScheduleRepository.findById(id).get();
+    public ClassScheduleResDto findById(Long id, Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
+        ClassSchedule classSchedule = classScheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수업을 찾을 수 없습니다. : " + id));
+
         log.info("수업 ID로 수업 일정 조회: {}",id);
         return ClassScheduleServiceImpl.toDto(classSchedule);
     }
 
     // 전체 수업 일정 조회
     @Transactional  @Override
-    public List<ClassScheduleResDto> findAll() {
-
-        log.info("전체 수업 일정 조회");
+    public List<ClassScheduleResDto> findAll(Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
         return classScheduleRepository.findAll()
                 .stream()
                 .map(ClassScheduleServiceImpl::toDto)
@@ -63,7 +74,10 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     // 수업명으로 일정 조회
     @Transactional
     @Override
-    public List<ClassScheduleResDto> findBySubjectName(String subjectName) {
+    public List<ClassScheduleResDto> findBySubjectName(String subjectName, Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
         log.info("수업명으로 일정 조회: {}", subjectName);
         return classScheduleRepository.findBySubjectNameContaining(subjectName)
                 .stream()
@@ -74,7 +88,10 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     // 수업 설명으로 일정 조회
     @Transactional
     @Override
-    public List<ClassScheduleResDto> findByClassDesc(String classDesc) {
+    public List<ClassScheduleResDto> findByClassDesc(String classDesc, Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
         log.info("수업 설명으로 일정 조회: {}", classDesc);
         return classScheduleRepository.findByClassDescContaining(classDesc)
                 .stream()
@@ -84,8 +101,12 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     // 공지 전체 수정
     @Override @Transactional
-    public ClassScheduleResDto updateClassSchedule(Long id, ClassScheduleWriteDto classScheduleWriteDto) {
-        ClassSchedule classSchedule = classScheduleRepository.findById(id).get();
+    public ClassScheduleResDto updateClassSchedule(Long id, ClassScheduleWriteDto classScheduleWriteDto, Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
+        ClassSchedule classSchedule = classScheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수업을 찾을 수 없습니다. : " + id));
 
         classSchedule.setSubjectName(classScheduleWriteDto.getSubjectName());
         classSchedule.setStartDate(classScheduleWriteDto.getStartDate());
@@ -98,8 +119,13 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     // 수업 삭제
     @Override @Transactional
-    public void deleteClassSchedule(Long id) {
-        ClassSchedule classSchedule = classScheduleRepository.findById(id).get();
+    public void deleteClassSchedule(Long id, Authentication authentication) {
+        String memberEmail = authentication.getName();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
+        ClassSchedule classSchedule = classScheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수업을 찾을 수 없습니다. : " + id));
+
         classScheduleRepository.delete(classSchedule);
     }
 

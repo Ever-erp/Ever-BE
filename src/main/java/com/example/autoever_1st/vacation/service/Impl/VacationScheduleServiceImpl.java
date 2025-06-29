@@ -9,8 +9,6 @@ import com.example.autoever_1st.vacation.entities.VacationSchedule;
 import com.example.autoever_1st.vacation.mapper.VacationScheduleMapper;
 import com.example.autoever_1st.vacation.repository.VacationScheduleRepository;
 import com.example.autoever_1st.vacation.service.VacationScheduleService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,17 +32,12 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     public VacationScheduleDto createVacationSchedule(VacationScheduleWriteDto vacationScheduleWriteDto,Authentication authentication) {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("not found"));
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
         VacationSchedule entity = vacationScheduleMapper.toEntity(vacationScheduleWriteDto, member);
         VacationSchedule saved =  vacationScheduleRepository.save(entity);
-        log.info("새 휴가 작성");
         VacationScheduleDto vacationScheduleDto = vacationScheduleMapper.toDto(saved,member);
         log.info("member_id : {}", vacationScheduleDto.getMemberName());
-        try {
-            log.info("RETURN DTO: {}", new ObjectMapper().writeValueAsString(vacationScheduleDto));
-        } catch (JsonProcessingException e) {
-            log.error("DTO 직렬화 실패", e);
-        }
+
         return vacationScheduleDto;
 
     }
@@ -52,20 +45,21 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     // 휴가 조회 (단건)
     @Override
     @Transactional
-    public VacationScheduleDto findById(Long id){
+    public VacationScheduleDto findById(Long id, Authentication authentication){
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
         VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
-        log.info("휴가 ID로 단건 조회: {}", id);
         return VacationScheduleServiceImpl.toDto(vacationSchedule);
     }
 
     // 휴가 조회 (전체)
-//    @Override
+    @Override
     @Transactional
     public List<VacationScheduleDto> findAll(Authentication authentication) {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("not found"));
-        log.info("휴가 전체 조회");
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
         List<VacationSchedule> vacationSchedules = vacationScheduleRepository.findAll();
         List<VacationScheduleDto> dtos;
         return vacationScheduleRepository.findAll().stream()
@@ -75,7 +69,10 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
 
     // 휴가 수정 (PUT)
     @Override @Transactional
-    public VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto) {
+    public VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto, Authentication authentication) {
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
         VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
         vacationSchedule.setVacationDate(vacationScheduleWriteDto.getVacationDate());
         vacationSchedule.setVacationType(vacationScheduleWriteDto.getVacationType());
@@ -85,7 +82,10 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
 
     // 수업 삭제
     @Override @Transactional
-    public void deleteVacationSchedule(Long id) {
+    public void deleteVacationSchedule(Long id, Authentication authentication) {
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
         VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
         vacationScheduleRepository.delete(vacationSchedule);
     }

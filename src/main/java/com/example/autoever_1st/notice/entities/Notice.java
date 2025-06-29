@@ -39,12 +39,4 @@ public class Notice extends TimeStamp {       // extends TimeStamp (ID 중복 �
     @JoinColumn(name = "member_id")
     @JsonBackReference  // 직렬화 제외 (무한루프 참조 방지)
     private Member member;                  // 멤버(외래키)
-
-    @PrePersist
-    @PreUpdate
-    private void copyWriterFromMember() {
-        if (member != null) {
-            this.writer = member.getName(); // 작성 직전에 작성자 란에 회원의 이름 불러오기
-        }
-    }
 }
