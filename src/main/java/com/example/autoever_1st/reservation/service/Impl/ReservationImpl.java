@@ -89,8 +89,8 @@ public class ReservationImpl implements ReservationService {
             throw new ValidationException("하루 최대 2회까지 예약할 수 있습니다.", CustomStatus.INVALID_INPUT);
         }
         // 예약 인원 제한
-        if (reservationReqDto.getHeadCount() > 10) {
-            throw new ValidationException("예약 인원은 최대 10명까지 가능합니다.", CustomStatus.INVALID_INPUT);
+        if (reservationReqDto.getHeadCount() < 1 || reservationReqDto.getHeadCount() > 10) {
+            throw new ValidationException("예약 인원은 최소 1명, 최대 10명까지 가능합니다", CustomStatus.INVALID_INPUT);
         }
         // 중복 시간 예약 방지
         boolean alreadyReserved = reservationRepository.existsByRoomNumAndStartTimeAndReservationDate(
