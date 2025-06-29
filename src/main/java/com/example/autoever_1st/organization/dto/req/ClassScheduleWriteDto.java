@@ -15,9 +15,9 @@ import java.time.LocalDate;
 public class ClassScheduleWriteDto {
     @NotBlank(message = "수업명은 공백일 수 없습니다.")
     private String subjectName;
-    @NotEmpty(message = "시작 날짜 선택은 필수입니다.")
+    @NotNull(message = "시작 날짜 선택은 필수입니다.")
     private LocalDate startDate;
-    @NotEmpty(message = "종료 날짜 선택은 필수입니다.")
+    @NotNull(message = "종료 날짜 선택은 필수입니다.")
     private LocalDate endDate;
     @NotNull
     private String classDesc;
