@@ -78,7 +78,7 @@ public class NoticeController {
     }
 
     // 공지 수정(PUT)
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ApiResponse<NoticeDto> update(@PathVariable Long id, @RequestBody @Valid NoticeWriteDto dto, Authentication authentication) {
         return ApiResponse.success(noticeService.updateNotice(id, dto, authentication), HttpStatus.OK.value());
     }

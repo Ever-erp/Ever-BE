@@ -3,6 +3,8 @@ package com.example.autoever_1st.vacation.service.Impl;
 
 import com.example.autoever_1st.auth.entities.Member;
 import com.example.autoever_1st.auth.repository.MemberRepository;
+import com.example.autoever_1st.common.exception.CustomStatus;
+import com.example.autoever_1st.common.exception.exception_class.business.ValidationException;
 import com.example.autoever_1st.vacation.dto.VacationScheduleDto;
 import com.example.autoever_1st.vacation.dto.VacationScheduleWriteDto;
 import com.example.autoever_1st.vacation.entities.VacationSchedule;
@@ -86,7 +88,12 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
-        VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
+        VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 휴가 일정이 존재하지 않습니다."));
+        // 본인 것인지 확인
+        if (!vacationSchedule.getMember().getId().equals(member.getId())) {
+            throw new ValidationException("본인의 휴가 일정이 아닙니다.", CustomStatus.INVALID_INPUT);
+        }
         vacationScheduleRepository.delete(vacationSchedule);
     }
 

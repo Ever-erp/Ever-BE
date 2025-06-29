@@ -39,6 +39,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setTargetDate(dto.getTargetDate());
         notice.setType(dto.getType());
         notice.setMember(member);
+        notice.setWriter(member.getName());
 
         return NoticeDto.toDto(noticeRepository.save(notice));
     }
