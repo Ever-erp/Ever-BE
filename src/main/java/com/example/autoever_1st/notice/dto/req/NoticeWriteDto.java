@@ -26,7 +26,6 @@ public class NoticeWriteDto {          // 게시물 "작성" DTO (요청)
 
     // @FutureOrPresent로 오늘 또는 미래날짜만 허용 가능 (날짜 정합성 검사 가능)
     // but, 지난 공지 수정 시 지난 날로 targetDate 설정할 때 문제 발생 -> 일단 NotNull 처리 ( createNotice만 해당되게 고려 )
-    @NotNull(message = "공개 날짜 선택은 필수입니다.")
     private LocalDate targetDate;      // 공개 기한
 
     @NotNull(message = "글 유형을 선택하세요.")
