@@ -17,9 +17,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notice extends TimeStamp {       // extends TimeStamp (ID 중복 문제)
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
+
+//    id는 TimeStamp 엔티티 상속
 
     @Enumerated(EnumType.STRING)
     private TargetRange targetRange;        // 공개 범위 : 전체/반(웹앱/스마트팩토리/SW임베디드/IT보안/클라우드)
@@ -40,12 +39,4 @@ public class Notice extends TimeStamp {       // extends TimeStamp (ID 중복 �
     @JoinColumn(name = "member_id")
     @JsonBackReference  // 직렬화 제외 (무한루프 참조 방지)
     private Member member;                  // 멤버(외래키)
-
-    @PrePersist
-    @PreUpdate
-    private void copyWriterFromMember() {
-        if (member != null) {
-            this.writer = member.getName(); // 작성 직전에 작성자 란에 회원의 이름 불러오기
-        }
-    }
 }

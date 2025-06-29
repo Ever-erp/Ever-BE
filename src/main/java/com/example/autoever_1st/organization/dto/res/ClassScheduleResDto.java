@@ -1,4 +1,4 @@
-package com.example.autoever_1st.organization.dto.common;
+package com.example.autoever_1st.organization.dto.res;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ClassScheduleDto {
+public class ClassScheduleResDto {
     private Long id;
     private String subjectName;
     private LocalDate startDate;
