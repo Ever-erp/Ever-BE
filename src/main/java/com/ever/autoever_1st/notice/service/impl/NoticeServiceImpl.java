@@ -83,24 +83,6 @@ public class NoticeServiceImpl implements NoticeService {
         return page.map(NoticeDto::toDto);
     }
 
-    // 공지 유형 (공개범위/구분)으로 조회(AND, OR)
-    @Override @Transactional(readOnly = true)
-    public Page<NoticeDto> searchByTargetRangeAndType(TargetRange targetRange, Type type, Pageable pageable, Authentication authentication) {
-        String memberEmail = authentication.getName();
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
-
-        if (targetRange != TargetRange.ALL_TARGETRANGE && type != Type.ALL_TYPE) {
-            return noticeRepository.findByTargetRangeAndType(targetRange, type, pageable).map(NoticeDto::toDto);
-        } else if (targetRange != TargetRange.ALL_TARGETRANGE) {
-            return noticeRepository.findByTargetRange(targetRange, pageable).map(NoticeDto::toDto);
-        } else if (type != Type.ALL_TYPE) {
-            return noticeRepository.findByType(type, pageable).map(NoticeDto::toDto);
-        } else {
-            return noticeRepository.findAll(pageable).map(NoticeDto::toDto);
-        }
-    }
-
     // 공지 전체 수정
     @Override @Transactional
     public NoticeDto updateNotice(Long id, NoticeWriteDto dto,Authentication authentication) {
