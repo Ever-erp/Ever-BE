@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,9 +42,8 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
         VacationSchedule saved =  vacationScheduleRepository.save(entity);
         VacationScheduleDto vacationScheduleDto = vacationScheduleMapper.toDto(saved,member);
         log.info("member_id : {}", vacationScheduleDto.getMemberName());
-
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+SecurityContextHolder.getContext().getAuthentication().getAuthorities());
         return vacationScheduleDto;
-
     }
 
     // 휴가 조회 (단건)
