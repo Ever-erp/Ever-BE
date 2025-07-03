@@ -13,6 +13,7 @@ import com.ever.autoever_1st.notice.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     // 공지 생성
     @Override @Transactional
+    @PreAuthorize("hasRole('관리자')")
     public NoticeDto createNotice(NoticeWriteDto dto, Authentication authentication) {
         String memberEmail = authentication.getName();
         Member member = memberRepository.findByEmail(memberEmail)
@@ -85,6 +87,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     // 공지 전체 수정
     @Override @Transactional
+    @PreAuthorize("hasRole('관리자')")
     public NoticeDto updateNotice(Long id, NoticeWriteDto dto,Authentication authentication) {
         String memberEmail = authentication.getName();
         Member member = memberRepository.findByEmail(memberEmail)
@@ -102,6 +105,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     // 공지 삭제
     @Override @Transactional
+    @PreAuthorize("hasRole('관리자')")
     public void deleteNotice(Long id,Authentication authentication) {
         String memberEmail = authentication.getName();
         Member member = memberRepository.findByEmail(memberEmail)

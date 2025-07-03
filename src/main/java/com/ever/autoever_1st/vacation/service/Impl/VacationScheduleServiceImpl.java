@@ -14,6 +14,7 @@ import com.ever.autoever_1st.vacation.service.VacationScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
     // 휴가 작성
     @Override
     @Transactional
+    @PreAuthorize("hasRole('학생')")
     public VacationScheduleDto createVacationSchedule(VacationScheduleWriteDto vacationScheduleWriteDto, Authentication authentication) {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
@@ -71,6 +73,7 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
 
     // 휴가 수정 (PUT)
     @Override @Transactional
+    @PreAuthorize("hasRole('힉생')")
     public VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto, Authentication authentication) {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
@@ -82,8 +85,9 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
         return toDto(vacationScheduleRepository.save(vacationSchedule));
     }
 
-    // 수업 삭제
+    // 휴가 삭제
     @Override @Transactional
+    @PreAuthorize("hasRole('학생')")
     public void deleteVacationSchedule(Long id, Authentication authentication) {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)

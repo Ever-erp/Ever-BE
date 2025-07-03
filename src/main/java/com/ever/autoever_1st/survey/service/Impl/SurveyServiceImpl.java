@@ -110,7 +110,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_관리자')")
+    @PreAuthorize("hasRole('관리자')")
     public void createSurvey(SurveyCreateDto surveyCreateDto, String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
@@ -160,7 +160,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_학생')")
+    @PreAuthorize("hasRole('학생')")
     public void submitSurvey(String email, String surveyId, SurveySubmitDto surveySubmitDto) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
@@ -196,7 +196,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_관리자')")
+    @PreAuthorize("hasRole('관리자')")
     public void updateSurvey(String email, String surveyId, SurveyUpdateDto surveyUpdateDto) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
@@ -263,7 +263,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Transactional
     @Override
-    @PreAuthorize("hasRole('ROLE_관리자')")
+    @PreAuthorize("hasRole('관리자')")
     public void deleteSurvey(String email, String surveyId) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
@@ -283,7 +283,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_관리자')")
+    @PreAuthorize("hasRole('관리자')")
     public void deleteSurveys(List<String> surveyIds, String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
@@ -304,7 +304,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Transactional
     @Override
-    @PreAuthorize("hasRole('ROLE_학생')")
+    @PreAuthorize("hasRole('학생')")
     public SurveyMemberResDto getSurveyWithMember(String surveyId, String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
@@ -343,7 +343,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_관리자')")
+    @PreAuthorize("hasRole('관리자')")
     public SurveyWithMembersResDto getSurveyWithMembers(String surveyId, String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));

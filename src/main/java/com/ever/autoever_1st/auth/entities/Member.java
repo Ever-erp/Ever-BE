@@ -47,8 +47,8 @@ public class Member extends TimeStamp {
 
     private boolean isActive = true; // 기본값 true
 
-    @Enumerated(EnumType.STRING)
-    private Authority authority;
+//    @Enumerated(EnumType.STRING)
+//    private Authority authority;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
@@ -74,7 +74,7 @@ public class Member extends TimeStamp {
         this.address = address;
         this.profileImage = profileImage;
         this.isActive = true;
-        this.authority = Authority.ROLE_USER;
+//        this.authority = Authority.ROLE_USER;
         this.classEntity = classEntity;
         this.position = position;
     }

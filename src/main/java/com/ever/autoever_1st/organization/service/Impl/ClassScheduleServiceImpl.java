@@ -14,6 +14,7 @@ import com.ever.autoever_1st.organization.service.ClassScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     // 수업 생성
     @Transactional @Override
+    @PreAuthorize("hasRole('관리자')")
     public ClassScheduleResDto createClassSchedule(ClassScheduleWriteDto classScheduleWriteDto, Authentication authentication) {
         String memberEmail = authentication.getName();
         Member member = memberRepository.findByEmail(memberEmail)
@@ -59,17 +61,6 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
         return ClassScheduleServiceImpl.toDto(classSchedule);
     }
 
-    // 전체 수업 일정 조회
-    @Transactional  @Override
-    public List<ClassScheduleResDto> findAll(Authentication authentication) {
-        String memberEmail = authentication.getName();
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
-        return classScheduleRepository.findAll()
-                .stream()
-                .map(ClassScheduleServiceImpl::toDto)
-                .collect(Collectors.toList());
-    }
 
     // 수업명으로 일정 조회
     @Transactional
@@ -99,8 +90,9 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
                 .collect(Collectors.toList());
     }
 
-    // 공지 전체 수정
+    // 수업 전체 수정
     @Override @Transactional
+    @PreAuthorize("hasRole('관리자')")
     public ClassScheduleResDto updateClassSchedule(Long id, ClassScheduleWriteDto classScheduleWriteDto, Authentication authentication) {
         String memberEmail = authentication.getName();
         Member member = memberRepository.findByEmail(memberEmail)
@@ -119,6 +111,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     // 수업 삭제
     @Override @Transactional
+    @PreAuthorize("hasRole('관리자')")
     public void deleteClassSchedule(Long id, Authentication authentication) {
         String memberEmail = authentication.getName();
         Member member = memberRepository.findByEmail(memberEmail)

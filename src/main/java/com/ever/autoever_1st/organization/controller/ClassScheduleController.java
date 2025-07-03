@@ -28,13 +28,6 @@ public class ClassScheduleController {
         log.info("새 수업 작성");
         return ApiResponse.success(classScheduleService.createClassSchedule(classScheduleWriteDto, authentication), HttpStatus.CREATED.value());
     }
-//    전체 수업 스케줄 조회
-    @GetMapping
-    public ApiResponse<List<ClassScheduleResDto>> getAllClassSchedules(@RequestParam int year, @RequestParam int month, Authentication authentication) {
-        log.info("전체 수업 스케줄 조회 요청");
-        List<ClassScheduleResDto> classSchedules = classScheduleService.findAll(authentication);
-        return ApiResponse.success(classSchedules, HttpStatus.OK.value());
-    }
 
 //    ID로 수업 스케줄 조회
     @GetMapping("/{id}")
