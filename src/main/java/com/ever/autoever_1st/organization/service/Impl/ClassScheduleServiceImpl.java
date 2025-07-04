@@ -61,35 +61,6 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
         return ClassScheduleServiceImpl.toDto(classSchedule);
     }
 
-
-    // 수업명으로 일정 조회
-    @Transactional
-    @Override
-    public List<ClassScheduleResDto> findBySubjectName(String subjectName, Authentication authentication) {
-        String memberEmail = authentication.getName();
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
-        log.info("수업명으로 일정 조회: {}", subjectName);
-        return classScheduleRepository.findBySubjectNameContaining(subjectName)
-                .stream()
-                .map(ClassScheduleServiceImpl::toDto)
-                .collect(Collectors.toList());
-    }
-
-    // 수업 설명으로 일정 조회
-    @Transactional
-    @Override
-    public List<ClassScheduleResDto> findByClassDesc(String classDesc, Authentication authentication) {
-        String memberEmail = authentication.getName();
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
-        log.info("수업 설명으로 일정 조회: {}", classDesc);
-        return classScheduleRepository.findByClassDescContaining(classDesc)
-                .stream()
-                .map(ClassScheduleServiceImpl::toDto)
-                .collect(Collectors.toList());
-    }
-
     // 수업 전체 수정
     @Override @Transactional
     @PreAuthorize("hasRole('관리자')")

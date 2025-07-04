@@ -18,10 +18,4 @@ public interface ClassScheduleService {
 
     // 수업(id)으로 수업 일정 조회
     ClassScheduleResDto findById(Long id, Authentication authentication);
-
-    // 수업명으로 일정 조회
-    List<ClassScheduleResDto> findBySubjectName(String subjectName, Authentication authentication);
-
-    // 수업 설명으로 일정 조회
-    List<ClassScheduleResDto> findByClassDesc(String classDesc, Authentication authentication);
 }

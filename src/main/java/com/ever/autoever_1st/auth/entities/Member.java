@@ -1,7 +1,6 @@
 package com.ever.autoever_1st.auth.entities;
 
 import com.ever.autoever_1st.common.entities.TimeStamp;
-import com.ever.autoever_1st.constant.Authority;
 import com.ever.autoever_1st.notice.entities.Notice;
 import com.ever.autoever_1st.organization.entities.ClassEntity;
 import com.ever.autoever_1st.organization.entities.Position;
@@ -47,16 +46,13 @@ public class Member extends TimeStamp {
 
     private boolean isActive = true; // 기본값 true
 
-//    @Enumerated(EnumType.STRING)
-//    private Authority authority;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
     private ClassEntity classEntity;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
     @JsonManagedReference  // 직렬화 허용 (무한루프 참조 방지)
-    private List<Notice> noticeList=new ArrayList<>();
+    private List<Notice> noticeList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "position_id")
@@ -74,7 +70,6 @@ public class Member extends TimeStamp {
         this.address = address;
         this.profileImage = profileImage;
         this.isActive = true;
-//        this.authority = Authority.ROLE_USER;
         this.classEntity = classEntity;
         this.position = position;
     }

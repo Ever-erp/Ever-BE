@@ -21,7 +21,7 @@ import java.util.List;
 @Validated
 public class ClassScheduleController {
     private final ClassScheduleService classScheduleService;
-//    새 수업 생성
+    // 새 수업 생성
     @PostMapping
     public ApiResponse<ClassScheduleResDto> createClassSchedule(
             @RequestBody @Valid ClassScheduleWriteDto classScheduleWriteDto, Authentication authentication) {
@@ -29,27 +29,12 @@ public class ClassScheduleController {
         return ApiResponse.success(classScheduleService.createClassSchedule(classScheduleWriteDto, authentication), HttpStatus.CREATED.value());
     }
 
-//    ID로 수업 스케줄 조회
+    // ID로 수업 스케줄 조회
     @GetMapping("/{id}")
     public ApiResponse<ClassScheduleResDto> getClassScheduleById(@PathVariable Long id, Authentication authentication) {
         log.info("수업 스케줄 조회 요청 - ID: {}", id);
         ClassScheduleResDto classSchedules = classScheduleService.findById(id, authentication);
         return ApiResponse.success(classSchedules, HttpStatus.OK.value());
-    }
-//    수업명으로 검색
-    @GetMapping("/search/subject_name")
-    public ApiResponse<List<ClassScheduleResDto>> searchClassSchedulesBySubjectName(@RequestParam String keyword, Authentication authentication) {
-        log.info("수업명 검색 요청 - 키워드: {}", keyword);
-        List<ClassScheduleResDto> classSchedules = classScheduleService.findBySubjectName(keyword, authentication);
-        return ApiResponse.success(classSchedules,HttpStatus.OK.value());
-    }
-
-    //    수업 내용으로 검색
-    @GetMapping("/search/class_desc")
-    public ApiResponse<List<ClassScheduleResDto>> searchClassSchedulesByClassDesc(@RequestParam String keyword, Authentication authentication) {
-        log.info("수업내용 검색 요청 - 키워드: {}", keyword);
-        List<ClassScheduleResDto> classSchedules = classScheduleService.findByClassDesc(keyword, authentication);
-        return ApiResponse.success(classSchedules,HttpStatus.OK.value());
     }
 
     // 수업 수정(PUT)

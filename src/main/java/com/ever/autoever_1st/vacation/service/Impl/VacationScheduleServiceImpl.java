@@ -42,7 +42,6 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
         VacationSchedule saved =  vacationScheduleRepository.save(entity);
         VacationScheduleDto vacationScheduleDto = vacationScheduleMapper.toDto(saved,member);
         log.info("member_id : {}", vacationScheduleDto.getMemberName());
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+SecurityContextHolder.getContext().getAuthentication().getAuthorities());
         return vacationScheduleDto;
     }
 
@@ -55,20 +54,6 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
         VacationSchedule vacationSchedule = vacationScheduleRepository.findById(id).get();
         return VacationScheduleServiceImpl.toDto(vacationSchedule);
-    }
-
-    // 휴가 조회 (전체)
-    @Override
-    @Transactional
-    public List<VacationScheduleDto> findAll(Authentication authentication) {
-        String email = authentication.getName();
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + email));
-        List<VacationSchedule> vacationSchedules = vacationScheduleRepository.findAll();
-        List<VacationScheduleDto> dtos;
-        return vacationScheduleRepository.findAll().stream()
-                .map(vc -> vacationScheduleMapper.toDto(vc, member))
-                .toList();
     }
 
     // 휴가 수정 (PUT)

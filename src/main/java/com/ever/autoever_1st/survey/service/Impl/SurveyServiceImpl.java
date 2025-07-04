@@ -115,9 +115,6 @@ public class SurveyServiceImpl implements SurveyService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
         String role = member.getPosition().getRole();
-//        if (!"관리자".equals(role)) {
-//            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
-//        }
         // uuid 유효성 체크 or 생성
         String uuid = surveyCreateDto.getSurveyId();
         if (uuid == null || uuid.isBlank()) {
@@ -165,9 +162,6 @@ public class SurveyServiceImpl implements SurveyService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
         String role = member.getPosition().getRole();
-//        if (!"학생".equals(role)) {
-//            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
-//        }
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
         if (survey.getDueDate().isBefore(LocalDate.now())) {
@@ -202,9 +196,6 @@ public class SurveyServiceImpl implements SurveyService {
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
 
         String role = member.getPosition().getRole();
-//        if (!"관리자".equals(role)) {
-//            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
-//        }
         if (surveyUpdateDto.getDueDate().isBefore(LocalDate.now())) {
             throw new ValidationException("이미 마감된 설문은 수정할 수 없습니다.", CustomStatus.INVALID_INPUT);
         }
@@ -269,9 +260,6 @@ public class SurveyServiceImpl implements SurveyService {
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
 
         String role = member.getPosition().getRole();
-//        if (!"관리자".equals(role)) {
-//            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
-//        }
 
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
@@ -289,9 +277,6 @@ public class SurveyServiceImpl implements SurveyService {
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
 
         String role = member.getPosition().getRole();
-//        if (!"관리자".equals(role)) {
-//            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
-//        }
 
         for (String surveyId : surveyIds) {
             Survey survey = surveyRepository.findByUuid(surveyId)
@@ -309,9 +294,6 @@ public class SurveyServiceImpl implements SurveyService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
         String role = member.getPosition().getRole();
-//        if (!"학생".equals(role)) {
-//            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
-//        }
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
 
@@ -348,9 +330,6 @@ public class SurveyServiceImpl implements SurveyService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("회원 정보를 찾을 수 없습니다.", CustomStatus.NOT_HAVE_DATA));
         String role = member.getPosition().getRole();
-//        if (!"관리자".equals(role)) {
-//            throw new ValidationException("권한이 없습니다.", CustomStatus.INVALID_INPUT);
-//        }
         Survey survey = surveyRepository.findByUuid(surveyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 설문이 존재하지 않습니다.", CustomStatus.NOT_HAVE_DATA));
 

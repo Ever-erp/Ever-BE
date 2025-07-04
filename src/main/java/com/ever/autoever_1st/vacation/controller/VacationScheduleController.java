@@ -31,16 +31,6 @@ public class VacationScheduleController {
                 HttpStatus.CREATED.value()
         );
     }
-    // 전체 휴가 조회
-    @GetMapping
-    public ApiResponse<List<VacationScheduleDto>> getAllVacationSchedules(Authentication authentication) {
-
-        log.info("전체 휴가 스케줄 조회 요청");
-        return ApiResponse.success(
-                vacationScheduleService.findAll(authentication),
-                HttpStatus.OK.value()
-        );
-    }
     // ID로 휴가 조회
     @GetMapping("/{id}")
     public ApiResponse<VacationScheduleDto> getVacationScheduleById(@PathVariable Long id, Authentication authentication) {
