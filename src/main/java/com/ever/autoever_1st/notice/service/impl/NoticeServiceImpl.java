@@ -1,8 +1,6 @@
 package com.ever.autoever_1st.notice.service.impl;
 
 import com.ever.autoever_1st.notice.constant.SearchType;
-import com.ever.autoever_1st.notice.constant.TargetRange;
-import com.ever.autoever_1st.notice.constant.Type;
 import com.ever.autoever_1st.notice.dto.req.NoticeWriteDto;
 import com.ever.autoever_1st.notice.dto.res.NoticeDto;
 import com.ever.autoever_1st.notice.repository.NoticeRepository;
@@ -74,10 +72,9 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. : " + memberEmail));
         // ── SearchType 에 따라 다른 JPA 쿼리 호출
         Page<Notice> page = switch (searchType) {
+            case ALL_CATEGORY -> noticeRepository.searchEverywhere(text,pageable);
             case TITLE    -> noticeRepository
                     .findByTitleContainingIgnoreCaseOrderByIsPinnedDescIdDesc(text, pageable);
-            case CONTENTS -> noticeRepository
-                    .findByContentsContainingIgnoreCaseOrderByIsPinnedDescIdDesc(text, pageable);
             case WRITER   -> noticeRepository
                     .findByWriterContainingIgnoreCaseOrderByIsPinnedDescIdDesc(text, pageable);
         };

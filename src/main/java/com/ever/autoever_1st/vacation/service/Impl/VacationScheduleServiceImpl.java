@@ -58,7 +58,7 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
 
     // 휴가 수정 (PUT)
     @Override @Transactional
-    @PreAuthorize("hasRole('힉생')")
+    @PreAuthorize("hasRole('학생')")
     public VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto, Authentication authentication) {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
