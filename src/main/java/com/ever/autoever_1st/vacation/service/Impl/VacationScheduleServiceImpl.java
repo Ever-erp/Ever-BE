@@ -7,19 +7,16 @@ import com.ever.autoever_1st.common.exception.CustomStatus;
 import com.ever.autoever_1st.common.exception.exception_class.business.ValidationException;
 import com.ever.autoever_1st.vacation.dto.VacationScheduleDto;
 import com.ever.autoever_1st.vacation.dto.VacationScheduleWriteDto;
-import com.ever.autoever_1st.vacation.repository.VacationScheduleRepository;
 import com.ever.autoever_1st.vacation.entities.VacationSchedule;
 import com.ever.autoever_1st.vacation.mapper.VacationScheduleMapper;
+import com.ever.autoever_1st.vacation.repository.VacationScheduleRepository;
 import com.ever.autoever_1st.vacation.service.VacationScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +55,7 @@ public class VacationScheduleServiceImpl implements VacationScheduleService {
 
     // 휴가 수정 (PUT)
     @Override @Transactional
-    @PreAuthorize("hasRole('힉생')")
+    @PreAuthorize("hasRole('학생')")
     public VacationScheduleDto updateVacationSchedule(Long id, VacationScheduleWriteDto vacationScheduleWriteDto, Authentication authentication) {
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
